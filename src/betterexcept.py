@@ -89,8 +89,8 @@ def _show_context(filename: str, lineno: int, context: int = 2):
             line_range=(start, end),
             highlight_lines={lineno},
             word_wrap=False,
-            theme="monokai",
-            background_color="default",
+            theme=config.theme,
+            background_color=config.background_color,
         )
     )
 
