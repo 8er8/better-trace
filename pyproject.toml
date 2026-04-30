@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "betterexcept"
+version = "0.1.0"
+description = "A colorful, context-rich traceback formatter for Python"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [
+    {name = "Adamya Mondal"}
+]
+dependencies = [
+    "rich"
+]
+
+[project.urls]
+Homepage = "https://pypi.org/project/betterexcept/"
