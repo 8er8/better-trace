@@ -11,7 +11,6 @@ import pathlib
 import reprlib
 import logging
 import difflib
-import linecache
 
 _safe_repr = reprlib.Repr()
 _safe_repr.maxlevel = 2
