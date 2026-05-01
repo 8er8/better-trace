@@ -93,12 +93,13 @@ def _show_context(filename: str, lineno: int, context: int = 2):
     )
 
 
-def _suggest_name_error(msg: str, frame: TracebackType):
+def _suggest_name_error(msg: str, tb: TracebackType):
     """
     _suggest_name_error is a function that takes one paramter, which is msg.  
     It is used to suggest 'Did you mean: ...?'
     Args:
         msg (str): The exception message
+        
     Returns:
         None
     ## Used by:
@@ -112,8 +113,8 @@ def _suggest_name_error(msg: str, frame: TracebackType):
     name = msg.split("'")[1]
     candidates = set()
 
-    candidates.update(frame.tb_frame.f_locals.keys())
-    candidates.update(frame.tb_frame.f_globals.keys())
+    candidates.update(tb.tb_frame.f_locals.keys())
+    candidates.update(tb.tb_frame.f_globals.keys())
     candidates.update(dir(builtins))
 
     match = difflib.get_close_matches(name, candidates, n=1)
