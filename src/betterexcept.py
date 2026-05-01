@@ -95,11 +95,11 @@ def _show_context(filename: str, lineno: int, context: int = 2):
 
 def _suggest_name_error(msg: str, tb: TracebackType):
     """
-    _suggest_name_error is a function that takes one paramter, which is msg.  
+    _suggest_name_error is a function that takes two paramters, msg and tb.  
     It is used to suggest 'Did you mean: ...?'
     Args:
         msg (str): The exception message
-        
+        tb (TracebackType): The traceback object
     Returns:
         None
     ## Used by:
