@@ -1,4 +1,3 @@
-from typing import Type
 from types import TracebackType
 from dataclasses import dataclass
 from warnings import warn
@@ -373,7 +372,7 @@ def _print_minimal(
 
 def _print_tb(
     title: str,
-    exc_type: Type[BaseException] | None,
+    exc_type: type[BaseException] | None,
     exc: BaseException | None,
     tb: TracebackType | None,
     exceptgroup: bool = False,
@@ -425,7 +424,7 @@ def _print_tb(
 
 
 def _customhook(
-    exc_type: Type[BaseException] | None,
+    exc_type: type[BaseException] | None,
     exc: BaseException | None,
     tb: TracebackType | None,
 ) -> None:
