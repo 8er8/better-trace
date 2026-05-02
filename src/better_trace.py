@@ -10,6 +10,8 @@ import pathlib
 import reprlib
 import logging
 import difflib
+import os
+import linecache
 
 _safe_repr = reprlib.Repr()
 _safe_repr.maxlevel = 2
@@ -80,17 +82,37 @@ def _show_context(filename: str, lineno: int, context: int = 2):
     """
     start = max(1, lineno - context)
     end = lineno + context
-    console.print(
-        Syntax.from_path(
-            filename,
-            line_numbers=True,
-            line_range=(start, end),
-            highlight_lines={lineno},
-            word_wrap=False,
-            theme=config.theme,
-            background_color=config.background_color,
+    if not os.path.exists(filename):    
+        console.print(
+            Syntax.from_path(
+                filename,
+                line_numbers=True,
+                line_range=(start, end),
+                highlight_lines={lineno},
+                word_wrap=False,
+                theme=config.theme,
+                background_color=config.background_color,
+            )
         )
-    )
+    else:
+        lines = []
+        for i in range(start, end + 1):
+            line = linecache.getline(filename, i)
+            if line:
+                prefix = "❱ " if i == lineno else "  "
+                lines.append(f"{prefix}{i:>4} | {line.rstrip()}")
+
+        code = "\n".join(lines)
+
+        console.print(
+            Syntax(
+                code,
+                "python",
+                theme=config.theme,
+                background_color=config.background_color,
+                line_numbers=True,
+            )
+        )
 
 
 def _suggest_name_error(msg: str, tb: TracebackType):
