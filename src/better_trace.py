@@ -94,7 +94,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
                 background_color=config.background_color,
             )
         )
-    else:
+    else: # for repl file names (like <stdin>)
         lines = []
         for i in range(start, end + 1):
             line = linecache.getline(filename, i)
