@@ -1,4 +1,4 @@
-# Betterexcept
+# Better-trace
 A Python tool to make tracebacks colorful, context-rich, developer friendly, and turns  
 python crashes to something you can easily read
 ## Features
@@ -16,10 +16,10 @@ python crashes to something you can easily read
 - Built-in post mortem debugger (pdb)
 ## Installation
 Install using  
-`python3 -m pip install betterexcept`
+`python3 -m pip install better-trace`
 ## Quick example
 ``` python 
-from betterexcept import initialize
+from better_trace import initialize
 
 initialize()
 
@@ -49,7 +49,7 @@ initialize(
 ### Verbose
 full traceback + locals + context  
 Shows everything  
-![Verbose mode output](./assets/betterexcept_verbose.png)
+![Verbose mode output](./assets/better_trace_verbose.png)
 ### Context
 Balanced output with surrounding lines  
 ![Context mode output](./assets/betterexcept_context.png)
@@ -59,15 +59,15 @@ Short and readable
 ### Minimal
 Just the last frame and the error line  
 ![Minimal mode output](./assets/betterexcept_minimal.png)
-## Betterexcept demo
+## Better-trace demo
 ``` python
-from betterexcept import demo
+from better_trace import demo
 
 demo()
 ```
 ## Reverting back
 ``` python
-from betterexcept import revert
+from better_trace import revert
 
 revert()
 ```
@@ -82,7 +82,7 @@ Traceback (most recent call last):
 NameError: name 'my_va' is not defined
 ```
 ### After
-![Betterexcept output](./assets/betterexcept_verbose.png)
+![Better-trace output](./assets/better_trace_verbose.png)
 ## Notes
 - Requires `rich`
 - Works best in modern terminals
