@@ -82,7 +82,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
     """
     start = max(1, lineno - context)
     end = lineno + context
-    if not os.path.exists(filename):    
+    if os.path.exists(filename):    
         console.print(
             Syntax.from_path(
                 filename,
@@ -100,7 +100,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
             line = linecache.getline(filename, i)
             if line:
                 prefix = "❱ " if i == lineno else "  "
-                lines.append(f"{prefix}{i:>4} | {line.rstrip()}")
+                lines.append(f"{prefix}{line.rstrip()}")
 
         code = "\n".join(lines)
 
