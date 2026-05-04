@@ -4,3 +4,7 @@
 # Ignore Python bytecode
 __pycache__/
 *.pyc
+
+# Ignore python build stuff
+dist/
+build/
