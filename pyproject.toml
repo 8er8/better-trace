@@ -7,7 +7,7 @@ name = "better-trace"
 version = "0.1.0"
 description = "A colorful, context-rich traceback formatter for Python"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 license = "MIT"
 authors = [
     {name = "Adamya Mondal"}
