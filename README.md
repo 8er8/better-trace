@@ -52,13 +52,13 @@ Shows everything
 ![Verbose mode output](./assets/better_trace_verbose.png)
 ### Context
 Balanced output with surrounding lines  
-![Context mode output](./assets/betterexcept_context.png)
+![Context mode output](./assets/better_trace_context.png)
 ### Compact
 Short and readable  
-![Compact mode output](./assets/betterexcept_compact.png)
+![Compact mode output](./assets/better_trace_compact.png)
 ### Minimal
 Just the last frame and the error line  
-![Minimal mode output](./assets/betterexcept_minimal.png)
+![Minimal mode output](./assets/better_trace_minimal.png)
 ## Better-trace demo
 ``` python
 from better_trace import demo
