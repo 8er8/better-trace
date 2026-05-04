@@ -25,6 +25,7 @@ try:
     from rich import print
     from rich.syntax import Syntax
     from rich.console import Console
+    
 except ModuleNotFoundError:
     raise ModuleNotFoundError(
         "Please install rich via python3 -m pip install -r requirements.txt"
