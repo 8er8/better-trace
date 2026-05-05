@@ -17,4 +17,6 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://pypi.org/project/better-trace/"
+Homepage = "https://github.com/8er8/better-trace"
+Repository = "https://github.com/8er8/better-trace"
+Issues = "https://github.com/8er8/better-trace/issues"
