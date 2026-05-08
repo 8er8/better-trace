@@ -64,10 +64,9 @@ config = _Config()
 _MODES = {"verbose", "context", "compact", "minimal"}
 
 
-
 def _show_context(filename: str, lineno: int, context: int = 2):
     """
-    _show_context() is a function that takes a filename, lineno, and context to show multiple  
+    _show_context() is a function that takes a filename, lineno, and context to show multiple
     lines (contexts) instead of the usual one line per frame
     Args:
         filename (str): The filename of the file
@@ -82,7 +81,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
     """
     start = max(1, lineno - context)
     end = lineno + context
-    if os.path.exists(filename):    
+    if os.path.exists(filename):
         console.print(
             Syntax.from_path(
                 filename,
@@ -94,7 +93,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
                 background_color=config.background_color,
             )
         )
-    else: # for repl file names (like <stdin>)
+    else:  # for repl file names (like <stdin>)
         lines = []
         for i in range(start, end + 1):
             line = linecache.getline(filename, i)
@@ -117,7 +116,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
 
 def _suggest_name_error(msg: str, tb: TracebackType):
     """
-    _suggest_name_error is a function that takes two paramters, msg and tb.  
+    _suggest_name_error is a function that takes two paramters, msg and tb.
     It is used to suggest 'Did you mean: ...?'
     Args:
         msg (str): The exception message
@@ -146,8 +145,8 @@ def _suggest_name_error(msg: str, tb: TracebackType):
 
 def _initialize_mode(mode: str) -> str:
     """
-    _initialize_mode is used to initialize the mode by taking the mode name given by the user.  
-    If the mode doesn't exist, it would first try to get the first match usinfg difflib.  
+    _initialize_mode is used to initialize the mode by taking the mode name given by the user.
+    If the mode doesn't exist, it would first try to get the first match usinfg difflib.
     If there was no match, it would fallback to context mode
     Args:
         mode (str): The mode given by the user
@@ -213,186 +212,193 @@ def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: st
                 exceptgroup=True,
             )
 
-def _print_verbose(
-        title: str,
-        frames: traceback.StackSummary,
-        exc_type: type[BaseException],
-        exc: BaseException,
-        tb: TracebackType
-) -> None:
-        print(f"[red]{title}[/red]".center(50, "-") if title is not None else "")
-        prev_key = None
-        count = 0
-        prev_frame = None
-        for frame in frames:
-            key = (frame.filename, frame.name)
-            if key == prev_key:
-                count += 1
-            else:
-                if prev_frame:
-                    print(
-                        f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-                    )
-                    if not prev_frame.line:
-                        print("[red bold]  <line unavailable> [/red bold]")
-                    else:
-                        _show_context(prev_frame.filename, prev_frame.lineno)
-                    if count > 3:
-                        print(
-                            f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
-                        )
-                    print("-" * 40)
-                prev_frame = frame
-                prev_key = key
-                count = 1
-        if prev_frame:
-            print(
-                f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-            )
-            if not prev_frame.line:
-                print("[red bold]  <line unavailable> [/red bold]")
-            else:
-                _show_context(prev_frame.filename, prev_frame.lineno)
-            if count > 3:
-                print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
-            print("-" * 40)
-        
-        while tb.tb_next:
-            tb = tb.tb_next
 
-        filtered = []
-        for k, v in tb.tb_frame.f_locals.items():
-            if k in [
-                "password",
-                "token",
-                "key",
-                "api_key",
-                "api_token",
-                "api_password",
-            ]:
-                continue
-            if k.startswith("__"):
-                continue
-            if inspect.ismodule(v):
-                continue
-            if inspect.isfunction(v):
-                continue
-            if isinstance(v, BaseException):
-                continue
-            try:
-                val = _safe_repr.repr(v)
-            except Exception:
-                val = "<repr broken>"
-            filtered.append((k, val, type(v).__name__))
-        if config.show_locals and filtered:
-            print("[yellow]\nLocal variables (last frame):[/yellow]")
-            for k, v, t in filtered:
-                print(f" {k} ({t}) = {v}")
-        name = exc_type.__name__ if exc_type else "UnknownError"
-        msg = str(exc) if exc else ""
+def _print_verbose(
+    title: str,
+    frames: traceback.StackSummary,
+    exc_type: type[BaseException],
+    exc: BaseException,
+    tb: TracebackType,
+) -> None:
+    print(f"[red]{title}[/red]".center(50, "-") if title is not None else "")
+    prev_key = None
+    count = 0
+    prev_frame = None
+    for frame in frames:
+        key = (frame.filename, frame.name)
+        if key == prev_key:
+            count += 1
+        else:
+            if prev_frame:
+                print(
+                    f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+                )
+                if not prev_frame.line:
+                    print("[red bold]  <line unavailable> [/red bold]")
+                else:
+                    _show_context(prev_frame.filename, prev_frame.lineno)
+                if count > 3:
+                    print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+                print("-" * 40)
+            prev_frame = frame
+            prev_key = key
+            count = 1
+    if prev_frame:
         print(
-            f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
+            f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
         )
-        if isinstance(exc, NameError):
-            _suggest_name_error(msg, tb)
+        if not prev_frame.line:
+            print("[red bold]  <line unavailable> [/red bold]")
+        else:
+            _show_context(prev_frame.filename, prev_frame.lineno)
+        if count > 3:
+            print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+        print("-" * 40)
+
+    while tb.tb_next:
+        tb = tb.tb_next
+
+    filtered = []
+    for k, v in tb.tb_frame.f_locals.items():
+        if k in [
+            "password",
+            "token",
+            "key",
+            "api_key",
+            "api_token",
+            "api_password",
+        ]:
+            continue
+        if k.startswith("__"):
+            continue
+        if inspect.ismodule(v):
+            continue
+        if inspect.isfunction(v):
+            continue
+        if isinstance(v, BaseException):
+            continue
+        try:
+            val = _safe_repr.repr(v)
+        except Exception:
+            val = "<repr broken>"
+        filtered.append((k, val, type(v).__name__))
+    if config.show_locals and filtered:
+        print("[yellow]\nLocal variables (last frame):[/yellow]")
+        for k, v, t in filtered:
+            print(f" {k} ({t}) = {v}")
+    name = exc_type.__name__ if exc_type else "UnknownError"
+    msg = str(exc) if exc else ""
+    print(
+        f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
+    )
+    if isinstance(exc, NameError):
+        _suggest_name_error(msg, tb)
+
 
 def _print_context(
-        frames: traceback.StackSummary,
-        exc_type: type[BaseException],
-        exc: BaseException,
-        tb: TracebackType
+    frames: traceback.StackSummary,
+    exc_type: type[BaseException],
+    exc: BaseException,
+    tb: TracebackType,
 ) -> None:
-        frames = frames[-50:]
-        prev_key = None
-        count = 0
-        prev_frame = None
-        print("-- [red]Traceback (context mode)[/red] --")
-        for frame in frames:
-            key = (frame.filename, frame.name)
-            if key == prev_key:
-                count += 1
-            else:
-                if prev_frame:
-                    print(
-                        f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-                    )
-                    if not prev_frame.line:
-                        print("[red bold]  <line unavailable> [/red bold]")
-                    else:
-                        _show_context(prev_frame.filename, prev_frame.lineno, 1)
-                    if count > 3:
-                        print(
-                            f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
-                        )
-                    print("-" * 40)
-                prev_frame = frame
-                prev_key = key
-                count = 1
-        if prev_frame:
-            print(
-                f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-            )
-            if not prev_frame.line:
-                print("[red bold]  <line unavailable> [/red bold]")
-            else:
-                _show_context(prev_frame.filename, prev_frame.lineno, 1)
-            if count > 3:
-                print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
-            print("-" * 40)
-        while tb.tb_next:
-            tb = tb.tb_next
-        name = exc_type.__name__ if exc_type else "UnknownError"
-        msg = str(exc) if exc else ""
+    frames = frames[-50:]
+    prev_key = None
+    count = 0
+    prev_frame = None
+    print("-- [red]Traceback (context mode)[/red] --")
+    for frame in frames:
+        key = (frame.filename, frame.name)
+        if key == prev_key:
+            count += 1
+        else:
+            if prev_frame:
+                print(
+                    f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+                )
+                if not prev_frame.line:
+                    print("[red bold]  <line unavailable> [/red bold]")
+                else:
+                    _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                if count > 3:
+                    print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+                print("-" * 40)
+            prev_frame = frame
+            prev_key = key
+            count = 1
+    if prev_frame:
         print(
-            f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
+            f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
         )
-        if isinstance(exc, NameError):
-            _suggest_name_error(msg, tb)
+        if not prev_frame.line:
+            print("[red bold]  <line unavailable> [/red bold]")
+        else:
+            _show_context(prev_frame.filename, prev_frame.lineno, 1)
+        if count > 3:
+            print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+        print("-" * 40)
+    while tb.tb_next:
+        tb = tb.tb_next
+    name = exc_type.__name__ if exc_type else "UnknownError"
+    msg = str(exc) if exc else ""
+    print(
+        f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
+    )
+    if isinstance(exc, NameError):
+        _suggest_name_error(msg, tb)
+
 
 def _print_compact(
-        frames: traceback.StackSummary,
-        exc_type: type[BaseException],
-        exc: BaseException,
-        tb: TracebackType
+    frames: traceback.StackSummary,
+    exc_type: type[BaseException],
+    exc: BaseException,
+    tb: TracebackType,
 ) -> None:
     frames = frames[-3:]
     print("[red] -- Traceback (compact mode) -- [/red]")
     for i, frame in enumerate(frames):
         is_last = i == len(frames) - 1
         print(
-                f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
-            )
+            f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
+        )
         prefix = "❱ " if is_last else "  "
         if frame.line:
-            print(prefix, end='')
-            console.print(Syntax(frame.line))
+            print(prefix, end="")
+            console.print(
+                Syntax(
+                    frame.line,
+                    lexer="python",
+                    theme=config.theme,
+                    background_color=config.background_color,
+                )
+            )
     while tb.tb_next:
         tb = tb.tb_next
-    msg = str(exc) or '<no error message>'
+    msg = str(exc) or "<no error message>"
     print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
     if issubclass(exc_type, NameError):
         _suggest_name_error(msg, tb)
-        
+
 
 def _print_minimal(
-        frames: traceback.StackSummary,
-        exc_type: type[BaseException],
-        exc: BaseException,
-        tb: TracebackType,
+    frames: traceback.StackSummary,
+    exc_type: type[BaseException],
+    exc: BaseException,
+    tb: TracebackType,
 ) -> None:
-        _hidden_count = len(traceback.extract_tb(tb)) - 1
-        print("[red]-- Exception --[/red]")
-        frames: traceback.StackSummary = frames[-1:]
-        for frame in frames:
-            print(
-                f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
-            )
-            print(f">  {frame.line}")
-            print(
-                f"[red][bold]{exc_type.__name__ if exc_type else 'UnknownError'}[/bold]: {str(exc) if str(exc) else '<no message provided>'}"
-            )
-        if _hidden_count > 0:
-            print(f"[cyan]({_hidden_count} frame(s) hidden due to minimal mode)[/cyan]")
+    _hidden_count = len(traceback.extract_tb(tb)) - 1
+    print("[red]-- Exception --[/red]")
+    frames: traceback.StackSummary = frames[-1:]
+    for frame in frames:
+        print(
+            f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
+        )
+        print(f">  {frame.line}")
+        print(
+            f"[red][bold]{exc_type.__name__ if exc_type else 'UnknownError'}[/bold]: {str(exc) if str(exc) else '<no message provided>'}"
+        )
+    if _hidden_count > 0:
+        print(f"[cyan]({_hidden_count} frame(s) hidden due to minimal mode)[/cyan]")
+
 
 def _print_tb(
     title: str,
@@ -432,13 +438,13 @@ def _print_tb(
         return
     if config.mode == "verbose":
         _print_verbose(title, frames, exc_type, exc, tb)
-    
+
     elif config.mode == "context":
         _print_context(frames, exc_type, exc, tb)
-    
+
     elif config.mode == "compact":
         _print_compact(frames, exc_type, exc, tb)
-    
+
     elif config.mode == "minimal":
         _print_minimal(frames, exc_type, exc, tb)
 
