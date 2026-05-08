@@ -364,7 +364,8 @@ def _print_compact(
             )
         prefix = "❱ " if is_last else "  "
         if frame.line:
-            print(f"{prefix}{frame.line}")
+            print(prefix, end='')
+            console.print(Syntax(frame.line))
     while tb.tb_next:
         tb = tb.tb_next
     msg = str(exc) or '<no error message>'
