@@ -15,8 +15,22 @@ python crashes to something you can easily read
 - Optional logging to file
 - Built-in post mortem debugger (pdb)
 ## Installation
-Install using  
+### Cloning git
+You can install better-trace by cloning the git directory by  
+`git clone https://github.com/8er8/better-trace.git`
+Now you can choose one of the following options to install better-trace
+#### Option 1: Install normally (recommended) 
+`cd better-trace`  
+`python3 -m pip install .`  
+#### Option 2: Install in editable mode (best for development)
+`cd better-trace`  
+`python3 -m pip install -e .`
+
+### Install using PyPI
+Type this command to your shell--  
 `python3 -m pip install better-trace`
+#### Notes
+- Requires Python >= 3.11
 ## Quick example
 ``` python 
 from better_trace import initialize
@@ -49,16 +63,16 @@ initialize(
 ### Verbose
 full traceback + locals + context  
 Shows everything  
-![Verbose mode output](./assets/better_trace_verbose.png)
+![Verbose mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_verbose.png)
 ### Context
 Balanced output with surrounding lines  
-![Context mode output](./assets/better_trace_context.png)
+![Context mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_context.png)
 ### Compact
 Short and readable  
-![Compact mode output](./assets/better_trace_compact.png)
+![Compact mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_compact.png)
 ### Minimal
 Just the last frame and the error line  
-![Minimal mode output](./assets/better_trace_minimal.png)
+![Minimal mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_minimal.png)
 ## Better-trace demo
 ``` python
 from better_trace import demo
@@ -82,7 +96,7 @@ Traceback (most recent call last):
 NameError: name 'my_va' is not defined
 ```
 ### After
-![Better-trace output](./assets/better_trace_verbose.png)
+![Better-trace output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_verbose.png)
 ## Notes
 - Requires `rich`
 - Works best in modern terminals
