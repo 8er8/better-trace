@@ -17,7 +17,7 @@ python crashes to something you can easily read
 ## Installation
 ### Cloning github repo
 You can install better-trace by cloning the git directory by  
-`git clone https://github.com/8er8/better-trace.git`
+`git clone https://github.com/8er8/better-trace.git`  
 Now you can choose one of the following options to install better-trace
 #### Option 1: Install normally (recommended) 
 `cd better-trace`  
