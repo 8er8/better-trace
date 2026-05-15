@@ -15,7 +15,7 @@ python crashes to something you can easily read
 - Optional logging to file
 - Built-in post mortem debugger (pdb)
 ## Installation
-### Cloning git
+### Cloning git repo
 You can install better-trace by cloning the git directory by  
 `git clone https://github.com/8er8/better-trace.git`
 Now you can choose one of the following options to install better-trace
