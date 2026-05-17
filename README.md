@@ -1,4 +1,9 @@
 # Better-trace
+[![License: MIT](https://img.shields.io/badge/License-MIT-Yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://python.org)
+
+
 A Python tool to make tracebacks colorful, context-rich, developer friendly, and turns  
 python crashes to something you can easily read
 ## Features
@@ -116,4 +121,4 @@ developer-friendly
 - **Adamya Mondal** (for being the main dev)
 - Open for contributors
 ### License
-MIT
+This project is licensed under the MIT license
