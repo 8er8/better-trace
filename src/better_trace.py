@@ -61,7 +61,6 @@ class InvalidModeWarning(Warning):
 
 
 config = _Config()
-_MODES = {"verbose", "context", "compact", "minimal"}
 
 
 def _show_context(filename: str, lineno: int, context: int = 2):
@@ -399,6 +398,10 @@ def _print_minimal(
     if _hidden_count > 0:
         print(f"[cyan]({_hidden_count} frame(s) hidden due to minimal mode)[/cyan]")
 
+_MODES = {"verbose": _print_verbose, 
+          "context": _print_context, 
+          "compact": _print_compact, 
+          "minimal": _print_minimal}
 
 def _print_tb(
     title: str,
@@ -437,16 +440,9 @@ def _print_tb(
         sys.__excepthook__(exc_type, exc, tb)
         return
     if config.mode == "verbose":
-        _print_verbose(title, frames, exc_type, exc, tb)
-
-    elif config.mode == "context":
-        _print_context(frames, exc_type, exc, tb)
-
-    elif config.mode == "compact":
-        _print_compact(frames, exc_type, exc, tb)
-
-    elif config.mode == "minimal":
-        _print_minimal(frames, exc_type, exc, tb)
+        _MODES["verbose"](title, frames, exc_type, exc, tb)
+    else:
+        _MODES[config.mode](frames, exc_type, exc, tb)
 
     if config.log_exceptions:
         print(f"[cyan][bold]Note[/bold]: Logging exception to crash.log...[/cyan]")
