@@ -1,5 +1,6 @@
-# Ignore sensitive files
+# Ignore python envrionment files
 .env
+.venv/
 
 # Ignore Python bytecode
 __pycache__/
