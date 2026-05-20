@@ -69,16 +69,16 @@ initialize(
 ### Verbose
 full traceback + locals + context  
 Shows everything  
-![Verbose mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_verbose.png)
+![Verbose mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_verbose.png)
 ### Context
 Balanced output with surrounding lines  
-![Context mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_context.png)
+![Context mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_context.png)
 ### Compact
 Short and readable  
-![Compact mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_compact.png)
+![Compact mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_compact.png)
 ### Minimal
 Just the last frame and the error line  
-![Minimal mode output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_minimal.png)
+![Minimal mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_minimal.png)
 ## Better-trace demo
 ``` python
 from better_trace import demo
@@ -102,7 +102,18 @@ Traceback (most recent call last):
 NameError: name 'my_va' is not defined
 ```
 ### After
-![Better-trace output](https://raw.githubusercontent.com/8er8/better-trace/main/assets/better_trace_verbose.png)
+![Better-trace output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_verbose.png)
+
+## Why better-trace?
+Because the default python traceback is informative but is really ugly and sometimes hard to read.
+
+But better-trace makes tracebacks easier to read by--
+- Making tracebacks easier to read
+- Giving more info
+- Coloring and syntax higlighting powered by rich
+- Four different modes
+- And much more 
+
 ## Notes
 - Requires `rich`
 - Works best in modern terminals
