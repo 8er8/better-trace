@@ -1,6 +1,6 @@
 # Better-trace
 [![License: MIT](https://img.shields.io/badge/License-MIT-Yellow.svg)](https://opensource.org/licenses/MIT)
-[![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org)
+[![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org/project/better-trace)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
 
 
