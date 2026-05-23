@@ -36,7 +36,7 @@ Type this command to your shell--
 `python3 -m pip install better-trace`
 #### Notes
 - Requires Python >= 3.11
-- python3 may not work on windows, so use python or py
+- `python3` may not work on windows, so use `python` or `py`
 ## Quick example
 ``` python 
 from better_trace import initialize
