@@ -41,7 +41,7 @@ logging.basicConfig(
 #  |  better-trace  |
 #  |----------------|
 # Traceback formatter for Python
-# contributers - Adamya (me!)
+# contributors - Adamya (me!)
 # developers - Adamya (me!)
 # license - MIT
 
