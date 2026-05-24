@@ -174,6 +174,14 @@ def _initialize_mode(mode: str) -> str:
         )
     return "context"
 
+def _print_notes(exc: BaseException) -> None:
+    notes: list[str] | None = getattr(exc, "__notes__", None)
+    if not notes:
+        return
+    print("[cyan bold]\nNotes:[/cyan bold]")
+    for note in notes:
+        print(f"  [cyan]-[/cyan] {note}")
+
 
 def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: str = ""):
     """
@@ -292,6 +300,7 @@ def _print_verbose(
     )
     if isinstance(exc, NameError):
         _suggest_name_error(exc, tb)
+    _print_notes(exc)
 
 
 def _print_context(
@@ -344,6 +353,7 @@ def _print_context(
     )
     if isinstance(exc, NameError):
         _suggest_name_error(exc, tb)
+    _print_notes(exc)
 
 
 def _print_compact(
