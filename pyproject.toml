@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=69.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,14 +9,67 @@ description = "A colorful, context-rich traceback formatter for Python"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
+
 authors = [
-    {name = "Adamya Mondal"}
+    { name = "Adamya Mondal" }
 ]
+
+keywords = [
+    "traceback",
+    "exceptions",
+    "debugging",
+    "rich",
+    "terminal",
+    "developer-tools",
+    "error-handling",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Debuggers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
 dependencies = [
-    "rich"
+    "rich>=13.7.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "mypy",
+    "pytest",
+    "build",
+    "twine",
 ]
 
 [project.urls]
 Homepage = "https://github.com/8er8/better-trace"
 Repository = "https://github.com/8er8/better-trace"
 Issues = "https://github.com/8er8/better-trace/issues"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+warn_unused_configs = true
