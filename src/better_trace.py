@@ -1,4 +1,4 @@
-from types import TracebackType
+from types import TracebackType, ModuleType
 from dataclasses import dataclass
 from warnings import warn
 import sys
@@ -113,17 +113,20 @@ def _show_context(filename: str, lineno: int, context: int = 2):
         )
 
 
-def _suggest_name_error(exc: NameError, tb: TracebackType):
+def _suggest_name_error(exc: NameError, tb: TracebackType) -> None:
     """
     _suggest_name_error is a function that takes two paramters, exc and tb.
-    It is used to suggest 'Did you mean: ...?'
+    It is used to suggest 'Did you mean: ...? for NameErrors'
     Args:
         exc (NameError): The NameError object
         tb (TracebackType): The traceback object
     Returns:
         None
     ## Used by:
-        _print_tb
+        - print_verbose
+        - print_context
+        - print_compact
+        - print_minimal
     ## Notes:
         This is an internal function, so don't call it.
     """
@@ -140,6 +143,38 @@ def _suggest_name_error(exc: NameError, tb: TracebackType):
     match = difflib.get_close_matches(name, candidates, n=1)
     if match:
         print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
+
+def _suggest_attribute_error(exc: AttributeError) -> None:
+    """
+    _suggest_name_error is a function that takes one paramter, exc.
+    It is used to suggest 'Did you mean: ...? for AttributeErrors'
+    Args:
+        exc (AttributeError): The NameError object
+    Returns:
+        None
+    ## Used by:
+        - print_verbose
+        - print_context
+        - print_compact
+        - print_minimal
+    ## Notes:
+        This is an internal function, so don't call it.
+    """
+    name = exc.name
+    obj = exc.obj
+    if not name:
+        return
+    
+    match = difflib.get_close_matches(name, dir(obj))
+    if not match:
+        return
+    if isinstance(obj, type):
+        obj_name = obj.__name__
+    elif isinstance(obj, ModuleType):
+        obj_name = obj.__name__
+    else:
+        obj_name = type(obj).__name__
+    print(f"[cyan][bold]Did you mean[/bold]: {obj_name}.{match[0]}?[/cyan]")
 
 
 def _initialize_mode(mode: str) -> str:
@@ -293,6 +328,7 @@ def _print_verbose(
         print("[yellow]\nLocal variables (last frame):[/yellow]")
         for k, v, t in filtered:
             print(f" {k} ({t}) = {v}")
+    
     name = exc_type.__name__ if exc_type else "UnknownError"
     msg = str(exc) if exc else ""
     print(
@@ -300,6 +336,10 @@ def _print_verbose(
     )
     if isinstance(exc, NameError):
         _suggest_name_error(exc, tb)
+    
+    if isinstance(exc, AttributeError):
+        _suggest_attribute_error(exc)
+    
     _print_notes(exc)
 
 
@@ -346,6 +386,7 @@ def _print_context(
         print("-" * 40)
     while tb.tb_next:
         tb = tb.tb_next
+    
     name = exc_type.__name__ if exc_type else "UnknownError"
     msg = str(exc) if exc else ""
     print(
@@ -353,6 +394,10 @@ def _print_context(
     )
     if isinstance(exc, NameError):
         _suggest_name_error(exc, tb)
+    
+    if isinstance(exc, AttributeError):
+        _suggest_attribute_error(exc)
+    
     _print_notes(exc)
 
 
@@ -382,10 +427,15 @@ def _print_compact(
             )
     while tb.tb_next:
         tb = tb.tb_next
+    
     msg = str(exc) or "<no error message>"
     print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
+    
     if issubclass(exc_type, NameError):
         _suggest_name_error(exc, tb)
+    
+    if isinstance(exc, AttributeError):
+        _suggest_attribute_error(exc)
 
 
 def _print_minimal(
