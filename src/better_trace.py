@@ -113,12 +113,12 @@ def _show_context(filename: str, lineno: int, context: int = 2):
         )
 
 
-def _suggest_name_error(msg: str, tb: TracebackType):
+def _suggest_name_error(exc: NameError, tb: TracebackType):
     """
-    _suggest_name_error is a function that takes two paramters, msg and tb.
+    _suggest_name_error is a function that takes two paramters, exc and tb.
     It is used to suggest 'Did you mean: ...?'
     Args:
-        msg (str): The exception message
+        exc (NameError): The NameError object
         tb (TracebackType): The traceback object
     Returns:
         None
@@ -127,10 +127,10 @@ def _suggest_name_error(msg: str, tb: TracebackType):
     ## Notes:
         This is an internal function, so don't call it.
     """
-    if "'" not in msg:
+    name = exc.name
+    if not name:
         return
 
-    name = msg.split("'")[1]
     candidates = set()
 
     candidates.update(tb.tb_frame.f_locals.keys())
@@ -291,7 +291,7 @@ def _print_verbose(
         f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
     )
     if isinstance(exc, NameError):
-        _suggest_name_error(msg, tb)
+        _suggest_name_error(exc, tb)
 
 
 def _print_context(
@@ -343,7 +343,7 @@ def _print_context(
         f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
     )
     if isinstance(exc, NameError):
-        _suggest_name_error(msg, tb)
+        _suggest_name_error(exc, tb)
 
 
 def _print_compact(
@@ -375,7 +375,7 @@ def _print_compact(
     msg = str(exc) or "<no error message>"
     print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
     if issubclass(exc_type, NameError):
-        _suggest_name_error(msg, tb)
+        _suggest_name_error(exc, tb)
 
 
 def _print_minimal(
@@ -398,10 +398,14 @@ def _print_minimal(
     if _hidden_count > 0:
         print(f"[cyan]({_hidden_count} frame(s) hidden due to minimal mode)[/cyan]")
 
-_MODES = {"verbose": _print_verbose, 
-          "context": _print_context, 
-          "compact": _print_compact, 
-          "minimal": _print_minimal}
+
+_MODES = {
+    "verbose": _print_verbose,
+    "context": _print_context,
+    "compact": _print_compact,
+    "minimal": _print_minimal,
+}
+
 
 def _print_tb(
     title: str,
