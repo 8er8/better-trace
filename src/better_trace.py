@@ -30,6 +30,13 @@ except ModuleNotFoundError:
         "Please install rich via python3 -m pip install -r requirements.txt"
     ) from None
 
+from ._did_you_mean import (
+    suggest_name_error,
+    suggest_attribute_error,
+    suggest_module_not_found_error,
+    suggest_import_error,
+)
+
 __all__ = ["initialize", "demo", "revert"]
 console = Console()
 logging.basicConfig(
@@ -113,70 +120,6 @@ def _show_context(filename: str, lineno: int, context: int = 2):
         )
 
 
-def _suggest_name_error(exc: NameError, tb: TracebackType) -> None:
-    """
-    _suggest_name_error is a function that takes two paramters, exc and tb.
-    It is used to suggest 'Did you mean: ...? for NameErrors'
-    Args:
-        exc (NameError): The NameError object
-        tb (TracebackType): The traceback object
-    Returns:
-        None
-    ## Used by:
-        - print_verbose
-        - print_context
-        - print_compact
-        - print_minimal
-    ## Notes:
-        This is an internal function, so don't call it.
-    """
-    name = exc.name
-    if not name:
-        return
-
-    candidates = set()
-
-    candidates.update(tb.tb_frame.f_locals.keys())
-    candidates.update(tb.tb_frame.f_globals.keys())
-    candidates.update(dir(builtins))
-
-    match = difflib.get_close_matches(name, candidates, n=1)
-    if match:
-        print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
-
-def _suggest_attribute_error(exc: AttributeError) -> None:
-    """
-    _suggest_name_error is a function that takes one paramter, exc.
-    It is used to suggest 'Did you mean: ...? for AttributeErrors'
-    Args:
-        exc (AttributeError): The NameError object
-    Returns:
-        None
-    ## Used by:
-        - print_verbose
-        - print_context
-        - print_compact
-        - print_minimal
-    ## Notes:
-        This is an internal function, so don't call it.
-    """
-    name = exc.name
-    obj = exc.obj
-    if not name:
-        return
-    
-    match = difflib.get_close_matches(name, dir(obj))
-    if not match:
-        return
-    if isinstance(obj, type):
-        obj_name = obj.__name__
-    elif isinstance(obj, ModuleType):
-        obj_name = obj.__name__
-    else:
-        obj_name = type(obj).__name__
-    print(f"[cyan][bold]Did you mean[/bold]: {obj_name}.{match[0]}?[/cyan]")
-
-
 def _initialize_mode(mode: str) -> str:
     """
     _initialize_mode is used to initialize the mode by taking the mode name given by the user.
@@ -208,6 +151,7 @@ def _initialize_mode(mode: str) -> str:
             stacklevel=3,
         )
     return "context"
+
 
 def _print_notes(exc: BaseException) -> None:
     notes: list[str] | None = getattr(exc, "__notes__", None)
@@ -328,18 +272,24 @@ def _print_verbose(
         print("[yellow]\nLocal variables (last frame):[/yellow]")
         for k, v, t in filtered:
             print(f" {k} ({t}) = {v}")
-    
+
     name = exc_type.__name__ if exc_type else "UnknownError"
     msg = str(exc) if exc else ""
     print(
         f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
     )
     if isinstance(exc, NameError):
-        _suggest_name_error(exc, tb)
-    
+        suggest_name_error(exc, tb)
+
     if isinstance(exc, AttributeError):
-        _suggest_attribute_error(exc)
-    
+        suggest_attribute_error(exc)
+
+    if isinstance(exc, ModuleNotFoundError):
+        suggest_module_not_found_error(exc)
+
+    if isinstance(exc, ImportError):
+        suggest_import_error(exc)
+
     _print_notes(exc)
 
 
@@ -386,18 +336,24 @@ def _print_context(
         print("-" * 40)
     while tb.tb_next:
         tb = tb.tb_next
-    
+
     name = exc_type.__name__ if exc_type else "UnknownError"
     msg = str(exc) if exc else ""
     print(
         f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
     )
     if isinstance(exc, NameError):
-        _suggest_name_error(exc, tb)
-    
+        suggest_name_error(exc, tb)
+
     if isinstance(exc, AttributeError):
-        _suggest_attribute_error(exc)
+        suggest_attribute_error(exc)
     
+    if isinstance(exc, ModuleNotFoundError):
+        suggest_module_not_found_error(exc)
+    
+    if isinstance(exc, ImportError):
+        suggest_import_error(exc)
+
     _print_notes(exc)
 
 
@@ -427,15 +383,21 @@ def _print_compact(
             )
     while tb.tb_next:
         tb = tb.tb_next
-    
+
     msg = str(exc) or "<no error message>"
     print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
-    
+
     if issubclass(exc_type, NameError):
-        _suggest_name_error(exc, tb)
-    
+        suggest_name_error(exc, tb)
+
     if isinstance(exc, AttributeError):
-        _suggest_attribute_error(exc)
+        suggest_attribute_error(exc)
+    
+    if isinstance(exc, ModuleNotFoundError):
+        suggest_module_not_found_error(exc)
+   
+    if isinstance(exc, ImportError):
+        suggest_import_error(exc)
 
 
 def _print_minimal(
