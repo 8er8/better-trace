@@ -93,10 +93,10 @@ def suggest_import_error(exc: ImportError) -> None:
     all_items = dir(module)
     
     import re
-    match_msg = re.search(f"cannot import name '([^']+)'", str(exc))
+    match_msg = re.search(r"cannot import name '([^']+)'", str(exc))
     if not match_msg:
         return
     
     match = difflib.get_close_matches(match_msg.group(1), all_items)
     if match:
-        print(f"[cyan][bold]Did you mean[/bold]: from {exc.name} import {match[0]}?")
+        print(f"[cyan][bold]Did you mean[/bold]: from {exc.name} import {match[0]}?[/cyan]")
