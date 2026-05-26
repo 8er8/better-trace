@@ -4,6 +4,7 @@ import builtins
 import sys
 import pkgutil
 import importlib
+import re
 
 _has_rich: bool = True
 try:
@@ -43,7 +44,10 @@ def suggest_name_error(exc: NameError, tb: TracebackType) -> None:
 
     match = difflib.get_close_matches(name, candidates, n=1)
     if match:
-        print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
+        if not _has_rich:
+            print(f"Did you mean: {match[0]}?")
+        else:
+            print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
 
 def suggest_attribute_error(exc: AttributeError) -> None:
     """
@@ -75,15 +79,23 @@ def suggest_attribute_error(exc: AttributeError) -> None:
         obj_name = obj.__name__
     else:
         obj_name = type(obj).__name__
-    print(f"[cyan][bold]Did you mean[/bold]: {obj_name}.{match[0]}?[/cyan]")
+    
+    if not _has_rich:
+        print(f"Did you mean: {obj_name}.{match[0]}?")
+    else: 
+        print(f"[cyan][bold]Did you mean[/bold]: {obj_name}.{match[0]}?[/cyan]")
 
 def suggest_module_not_found_error(exc: ModuleNotFoundError) -> None:
     if not exc.name:
         return
     target_name = exc.name.split('.')[0]
     match = difflib.get_close_matches(target_name, all_modules, n=1)
+    
     if match:
-        print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
+        if not _has_rich:
+            print(f"Did you mean: {match[0]}?")
+        else:
+            print(f"[cyan][bold]Did you mean[/bold]: {match[0]}?[/cyan]")
 
 def suggest_import_error(exc: ImportError) -> None:
     if not exc.name:
@@ -95,12 +107,13 @@ def suggest_import_error(exc: ImportError) -> None:
         return
     
     all_items = dir(module)
-    
-    import re
     match_msg = re.search(r"cannot import name '([^']+)'", str(exc))
+    
     if not match_msg:
         return
     
     match = difflib.get_close_matches(match_msg.group(1), all_items)
     if match:
+        print(f"Did you mean: from {exc.name} import {match[0]}?")
+    else:   
         print(f"[cyan][bold]Did you mean[/bold]: from {exc.name} import {match[0]}?[/cyan]")
