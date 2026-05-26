@@ -5,7 +5,11 @@ import sys
 import pkgutil
 import importlib
 
-from rich import print
+_has_rich: bool = True
+try:
+    from rich import print
+except ModuleNotFoundError:
+    _has_rich = False
 
 all_modules = {module.name for module in pkgutil.iter_modules()}
 all_modules.update(sys.builtin_module_names)
