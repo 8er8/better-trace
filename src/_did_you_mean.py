@@ -51,10 +51,10 @@ def suggest_name_error(exc: NameError, tb: TracebackType) -> None:
 
 def suggest_attribute_error(exc: AttributeError) -> None:
     """
-    suggest_name_error is a function that takes one paramter, exc.
+    suggest_attribute_error is a function that takes one paramter, exc.
     It is used to suggest 'Did you mean: ...? for AttributeErrors'
     Args:
-        exc (AttributeError): The NameError object
+        exc (AttributeError): The AttributeError object
     Returns:
         None
     ## Used by:
@@ -112,8 +112,9 @@ def suggest_import_error(exc: ImportError) -> None:
     if not match_msg:
         return
     
-    match = difflib.get_close_matches(match_msg.group(1), all_items)
+    match = difflib.get_close_matches(match_msg.group(1), all_items, n=1)
     if match:
-        print(f"Did you mean: from {exc.name} import {match[0]}?")
-    else:   
-        print(f"[cyan][bold]Did you mean[/bold]: from {exc.name} import {match[0]}?[/cyan]")
+        if not _has_rich:
+            print(f"Did you mean: from {exc.name} import {match[0]}?")
+        else:   
+            print(f"[cyan][bold]Did you mean[/bold]: from {exc.name} import {match[0]}?[/cyan]")
