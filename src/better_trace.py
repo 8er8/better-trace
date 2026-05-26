@@ -567,7 +567,7 @@ def _print_tb(
         frame.lineno = lineno
     if not frames:
         if exceptgroup:
-            if _has_rich:
+            if not _has_rich:
                 print(
                     f"> {exc_type.__name__ or 'UnknownError'}: {str(exc) or '<no message provided>'}"
                 )
