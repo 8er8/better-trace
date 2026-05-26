@@ -97,7 +97,7 @@ def _show_context(filename: str, lineno: int, context: int = 2):
             prefix = "❱ " if i == lineno else "  "
             print(f"{prefix}{i:4} | {line}")
         return
-    
+
     if os.path.exists(filename):
         console.print(
             Syntax.from_path(
@@ -200,7 +200,9 @@ def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: st
         print(f"Message: {str(exc) or '<no message available>'}")
     else:
         print(f"{indent}[red]{title.center(50, '-')}[/red]")
-        print(f"[cyan][bold]Message[/bold]: {str(exc) or '<no message available>'}[/cyan]")
+        print(
+            f"[cyan][bold]Message[/bold]: {str(exc) or '<no message available>'}[/cyan]"
+        )
 
     for i, sub in enumerate(exc.exceptions, 1):
         new_prefix = f"{index_prefix}{i}." if index_prefix else f"{i}."
@@ -233,7 +235,7 @@ def _print_verbose(
     tb: TracebackType,
 ) -> None:
     if not _has_rich:
-        print(f"{title}".center(50, '-') if title is not None else "")
+        print(f"{title}".center(50, "-") if title is not None else "")
     else:
         print(f"[red]{title}[/red]".center(50, "-") if title is not None else "")
     prev_key = None
@@ -245,29 +247,53 @@ def _print_verbose(
             count += 1
         else:
             if prev_frame:
-                print(
-                    f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-                )
-                if not prev_frame.line:
-                    print("[red bold]  <line unavailable> [/red bold]")
+                if not _has_rich:
+                    print(
+                        f'File "{prev_frame.filename}", line {prev_frame.lineno}, in {prev_frame.name}'
+                    )
+                    if not prev_frame.line:
+                        print("  <line unavailable>  ")
+                    else:
+                        _show_context(prev_frame.filename, prev_frame.lineno)
+                    if count > 3:
+                        print(f"(Previous line repeated {count-1} times)")
                 else:
-                    _show_context(prev_frame.filename, prev_frame.lineno)
-                if count > 3:
-                    print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+                    print(
+                        f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+                    )
+                    if not prev_frame.line:
+                        print("[red bold]  <line unavailable> [/red bold]")
+                    else:
+                        _show_context(prev_frame.filename, prev_frame.lineno)
+                    if count > 3:
+                        print(
+                            f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
+                        )
                 print("-" * 40)
             prev_frame = frame
             prev_key = key
             count = 1
     if prev_frame:
-        print(
-            f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-        )
-        if not prev_frame.line:
-            print("[red bold]  <line unavailable> [/red bold]")
+        if not _has_rich:
+            print(
+                f'File "{prev_frame.filename}", line {prev_frame.lineno}, in {prev_frame.name}'
+            )
+            if not prev_frame.line:
+                print("  <line unavailable>  ")
+            else:
+                _show_context(prev_frame.filename, prev_frame.lineno)
+            if count > 3:
+                print(f"(Previous line repeated {count-1} times)")
         else:
-            _show_context(prev_frame.filename, prev_frame.lineno)
-        if count > 3:
-            print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+            print(
+                f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+            )
+            if not prev_frame.line:
+                print("[red bold]  <line unavailable> [/red bold]")
+            else:
+                _show_context(prev_frame.filename, prev_frame.lineno)
+            if count > 3:
+                print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
         print("-" * 40)
 
     while tb.tb_next:
@@ -275,7 +301,7 @@ def _print_verbose(
 
     filtered = []
     for k, v in tb.tb_frame.f_locals.items():
-        if k in [
+        if k.lower() in [
             "password",
             "token",
             "key",
@@ -298,15 +324,20 @@ def _print_verbose(
             val = "<repr broken>"
         filtered.append((k, val, type(v).__name__))
     if config.show_locals and filtered:
-        print("[yellow]\nLocal variables (last frame):[/yellow]")
+        if not _has_rich:
+            print("\nLocal variables (last frame):")
+        else:
+            print("[yellow]\nLocal variables (last frame):[/yellow]")
         for k, v, t in filtered:
             print(f" {k} ({t}) = {v}")
 
-    name = exc_type.__name__ if exc_type else "UnknownError"
-    msg = str(exc) if exc else ""
-    print(
-        f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
-    )
+    name = exc_type.__name__ or "UnknownError"
+    msg = str(exc) or "<no message provided>"
+
+    if not _has_rich:
+        print(f"{name}: {msg}")
+    else:
+        print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
     if isinstance(exc, NameError):
         suggest_name_error(exc, tb)
 
@@ -332,45 +363,74 @@ def _print_context(
     prev_key = None
     count = 0
     prev_frame = None
-    print("-- [red]Traceback (context mode)[/red] --")
+    if not _has_rich:
+        print("-- Traceback (context mode) --")
+    else:
+        print("-- [red]Traceback (context mode)[/red] --")
     for frame in frames:
         key = (frame.filename, frame.name)
         if key == prev_key:
             count += 1
         else:
             if prev_frame:
-                print(
-                    f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-                )
-                if not prev_frame.line:
-                    print("[red bold]  <line unavailable> [/red bold]")
+                if not _has_rich:
+                    print(
+                        f'File "{prev_frame.filename}", line {prev_frame.lineno} in {prev_frame.name}'
+                    )
+                    if not prev_frame.line:
+                        print(f"  <line unavailable>  ")
+                    else:
+                        _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                    if count > 3:
+                        print(f"(Previous line repeated {count-1} more times)")
                 else:
-                    _show_context(prev_frame.filename, prev_frame.lineno, 1)
-                if count > 3:
-                    print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+                    print(
+                        f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+                    )
+                    if not prev_frame.line:
+                        print("[red bold]  <line unavailable> [/red bold]")
+                    else:
+                        _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                    if count > 3:
+                        print(
+                            f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
+                        )
                 print("-" * 40)
             prev_frame = frame
             prev_key = key
             count = 1
     if prev_frame:
-        print(
-            f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
-        )
-        if not prev_frame.line:
-            print("[red bold]  <line unavailable> [/red bold]")
+        if not _has_rich:
+            print(
+                f'File "{prev_frame.filename}", line {prev_frame.lineno} in {prev_frame.name}'
+            )
+            if not prev_frame.line:
+                print(f"  <line unavailable>  ")
+            else:
+                _show_context(prev_frame.filename, prev_frame.lineno, 1)
+            if count > 3:
+                print(f"(Previous line repeated {count-1} more times)")
         else:
-            _show_context(prev_frame.filename, prev_frame.lineno, 1)
-        if count > 3:
-            print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
+            print(
+                f'File "{prev_frame.filename}", line {prev_frame.lineno}, in [yellow][bold]{prev_frame.name}[/bold][/yellow]'
+            )
+            if not prev_frame.line:
+                print("[red bold]  <line unavailable>  [/red bold]")
+            else:
+                _show_context(prev_frame.filename, prev_frame.lineno, 1)
+            if count > 3:
+                print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
         print("-" * 40)
     while tb.tb_next:
         tb = tb.tb_next
 
-    name = exc_type.__name__ if exc_type else "UnknownError"
-    msg = str(exc) if exc else ""
-    print(
-        f"[red][bold]{name}[/bold][/red]: [red]{msg if msg else '<no message provided>'}[/red]"
-    )
+    name = exc_type.__name__ or "UnknownError"
+    msg = str(exc) or "<no message provided>"
+
+    if not _has_rich:
+        print(f"{name}: {msg}")
+    else:
+        print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
     if isinstance(exc, NameError):
         suggest_name_error(exc, tb)
 
@@ -393,28 +453,41 @@ def _print_compact(
     tb: TracebackType,
 ) -> None:
     frames = frames[-3:]
-    print("[red] -- Traceback (compact mode) -- [/red]")
+    if not _has_rich:
+        print("-- Traceback (compact mode) --")
+    else:
+        print("[red]-- Traceback (compact mode) --[/red]")
     for i, frame in enumerate(frames):
         is_last = i == len(frames) - 1
-        print(
-            f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
-        )
+
+        if not _has_rich:
+            print(f"{pathlib.Path(frame.filename).name}:{frame.lineno} -> {frame.name}")
+        else:
+            print(
+                f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
+            )
         prefix = "❱ " if is_last else "  "
         if frame.line:
-            print(prefix, end="")
-            console.print(
-                Syntax(
-                    frame.line,
-                    lexer="python",
-                    theme=config.theme,
-                    background_color=config.background_color,
+            if not _has_rich:
+                print(f"{prefix}{frame.line}")
+            else:
+                print(prefix, end="")
+                console.print(
+                    Syntax(
+                        frame.line,
+                        lexer="python",
+                        theme=config.theme,
+                        background_color=config.background_color,
+                    )
                 )
-            )
     while tb.tb_next:
         tb = tb.tb_next
 
     msg = str(exc) or "<no error message>"
-    print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
+    if not _has_rich:
+        print(f"{exc_type.__name__}: {msg}")
+    else:
+        print(f"[red][bold]{exc_type.__name__}[/bold]: {msg}[/red]")
 
     if issubclass(exc_type, NameError):
         suggest_name_error(exc, tb)
@@ -436,16 +509,24 @@ def _print_minimal(
     tb: TracebackType,
 ) -> None:
     _hidden_count = len(traceback.extract_tb(tb)) - 1
-    print("[red]-- Exception --[/red]")
+
+    print("[red]-- Exception --[/red]") if _has_rich else print("-- Exception --")
     frames: traceback.StackSummary = frames[-1:]
     for frame in frames:
-        print(
-            f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
-        )
-        print(f">  {frame.line}")
-        print(
-            f"[red][bold]{exc_type.__name__ if exc_type else 'UnknownError'}[/bold]: {str(exc) if str(exc) else '<no message provided>'}"
-        )
+        if not _has_rich:
+            print(f"{pathlib.Path(frame.filename).name}:{frame.lineno} -> {frame.name}")
+            print(f"> {frame.line}")
+            print(
+                f"{exc_type.__name__ or 'UnknownError'}: {str(exc) or '<no message provided'}"
+            )
+        else:
+            print(
+                f"[yellow]{pathlib.Path(frame.filename).name}[/yellow]:{frame.lineno} -> [cyan]{frame.name}[/cyan]"
+            )
+            print(f"[red][bold]>[/bold]  {frame.line}[/red]")
+            print(
+                f"[red][bold]{exc_type.__name__ or 'UnknownError'}[/bold]: {str(exc) or '<no message provided>'}[/red]"
+            )
     if _hidden_count > 0:
         print(f"[cyan]({_hidden_count} frame(s) hidden due to minimal mode)[/cyan]")
 
@@ -486,9 +567,14 @@ def _print_tb(
         frame.lineno = lineno
     if not frames:
         if exceptgroup:
-            print(
-                f"[red]>[bold] {exc_type.__name__ if exc_type else 'UnknownError'}[/bold]: {str(exc) or '<no message provided>'}[/red]"
-            )
+            if _has_rich:
+                print(
+                    f"> {exc_type.__name__ or 'UnknownError'}: {str(exc) or '<no message provided>'}"
+                )
+            else:
+                print(
+                    f"[red]>[bold] {exc_type.__name__ or 'UnknownError'}[/bold]: {str(exc) or '<no message provided>'}[/red]"
+                )
             return
         builtins.print("ERROR: No traceback available")
         builtins.print("Printing original traceback...")
@@ -500,7 +586,10 @@ def _print_tb(
         _MODES[config.mode](frames, exc_type, exc, tb)
 
     if config.log_exceptions:
-        print(f"[cyan][bold]Note[/bold]: Logging exception to crash.log...[/cyan]")
+        if not _has_rich:
+            print(f"Logging exception to crash.log...")
+        else:
+            print(f"[cyan][bold]Note[/bold]: Logging exception to crash.log...[/cyan]")
         logging.error("Unhandled exception", exc_info=(exc_type, exc, old_tb))
 
 
@@ -525,51 +614,86 @@ def _customhook(
     # what does【東方ボーカルMV】メイドノココロハアヤツリドール（Vo:あよ）【森羅万象公式】 even mean tbh
     try:
         if exc_type and issubclass(exc_type, KeyboardInterrupt):
-            print("[yellow]Keyboard Interrupt[/yellow]".center(50, "-"))
-            print("[yellow]The program was terminated by the user[/yellow]")
-            print(
-                "[cyan]Note: [/cyan]If you triggered it accidentally, note that Ctrl + C means KeyboardInterrupt"
-            )
+            if not _has_rich:
+                print(f"Keyboard Interrupt".center(50, "-"))
+                print("The program was terminated by the user")
+                print(
+                    "Note: If you triggered it accidentally, note that Ctrl + C mean KeyboardInterrupt"
+                )
+            else:
+                print("[yellow]Keyboard Interrupt[/yellow]".center(50, "-"))
+                print("[yellow]The program was terminated by the user[/yellow]")
+                print(
+                    "[cyan]Note: [/cyan]If you triggered it accidentally, note that Ctrl + C means KeyboardInterrupt"
+                )
             return
         if exc_type and issubclass(exc_type, SyntaxError):
             if tb is None and exc is not None:
-                print("[red]SyntaxError (detected in excepthook._customhook):[/red]")
-                print(f'File "{exc.filename}", line {exc.lineno}')
-                print(f"  [red]{exc.text.rstrip()}[/red]")
-                print(f'[red]{" " * (exc.offset + 1) + "^^"}[/red]')
-                print(f"[red][bold]{exc_type.__name__}[/bold]: {exc.msg}[/red]")
+                if not _has_rich:
+                    print("SyntaxError (detected in excepthook._customhook):")
+                    print(f'File "{exc.filename}", line {exc.lineno}')
+                    print(f"  {exc.text.rstrip()}")
+                    print(f'{" " * (exc.offset + 1) + "^^"}')
+                    print(f"{exc_type.__name__}: {exc.msg}")
+                else:
+                    print("[red]SyntaxError (detected in excepthook._customhook):[/red]")
+                    print(f'File "{exc.filename}", line {exc.lineno}')
+                    print(f"  [red]{exc.text.rstrip()}[/red]")
+                    print(f'[red]{" " * (exc.offset + 1) + "^^"}[/red]')
+                    print(f"[red][bold]{exc_type.__name__}[/bold]: {exc.msg}[/red]")
                 return
         if isinstance(exc, ExceptionGroup):
             _print_exception_group(exc)
         if exc and exc.__cause__:
             cause = exc.__cause__
             _print_tb("An error occurred", type(cause), cause, cause.__traceback__)
-            print(
-                "\n----[red]The above exception was the cause of the other exception below[/red]----\n"
-            )
+            if not _has_rich:
+                print(
+                    "\n----The above exception was the cause of the other exception below----\n"
+                )
+            else:   
+                print(
+                    "\n----[red]The above exception was the cause of the other exception below[/red]----\n"
+                )
             _print_tb("Another error occurred", exc_type, exc, tb)
         elif exc and exc.__context__ and not exc.__suppress_context__:
             ctx = exc.__context__
             _print_tb("An error occurred", type(ctx), ctx, ctx.__traceback__)
-            print(
-                "\n----[red]While handling the previous exception, a new exception has occurred[/red]----\n"
-            )
+            if not _has_rich:
+                print(
+                    "\n----While handling the previous exception, a new exception has occurred----\n"
+                )
+            else:  
+                print(
+                    "\n----[red]While handling the previous exception, a new exception has occurred[/red]----\n"
+                )
             _print_tb("Another error occurred", exc_type, exc, tb)
         else:
             _print_tb("An error occurred", exc_type, exc, tb)
         if config.debugger:
             import pdb  # pdb for python debugger bulls--(this comment got cut due to some reason)
 
-            print("\n[cyan]Debugger active. Type 'q' to quit.[/cyan]")
+            if not _has_rich:
+                print("\nDebugger active. Type 'q' to quit.")   
+            else:   
+                print("\n[cyan]Debugger active. Type 'q' to quit.[/cyan]")
             pdb.post_mortem(tb)
     except BaseException as e:
         if isinstance(e, KeyboardInterrupt):
-            print("[red][bold]ERROR[/bold]: User interrupt[/red]")
+            if not _has_rich:
+                print("ERROR: User interrupt")
+            else:  
+                print("[red][bold]ERROR[/bold]: User interrupt[/red]")
             return
         else:
-            print("[red][bold]ERROR[/bold]: Failed to print traceback")
-            print(f"[red bold]Exc_obj[/red bold]: {repr(e)}\n")
-            print("[red]Original exception was:[red]")
+            if not _has_rich:
+                print("ERROR: Failed to print traceback")
+                print(f"Exc_obj: {repr(e)}\n")
+                print("Original exception was:")
+            else:
+                print("[red][bold]ERROR[/bold]: Failed to print traceback")
+                print(f"[red bold]Exc_obj[/red bold]: {repr(e)}\n")
+                print("[red]Original exception was:[red]")
             sys.__excepthook__(exc_type, exc, tb)
 
 
@@ -585,7 +709,10 @@ def _threadhook(args: threading.ExceptHookArgs):
     ## Notes:
         It is an internal function, so don't call it
     """
-    print(f"[cyan]Exception in {args.thread.name}[/cyan]")
+    if not _has_rich:
+        print(f"Exception in {args.thread.name}")
+    else:  
+        print(f"[cyan]Exception in {args.thread.name}[/cyan]")
     _customhook(args.exc_type, args.exc_value, args.exc_traceback)
 
 
@@ -601,7 +728,10 @@ def _unraisablehook(unraisable) -> None:
         - It is an internal function, so don't use it!
     """
     # this thing is so short bruh
-    print(f"[yellow]Exception ignored in: {unraisable.object}[/yellow]")
+    if not _has_rich:
+        print(f"Exception ignored in: {unraisable.object}")
+    else:
+        print(f"[yellow]Exception ignored in: {unraisable.object}[/yellow]")
     _customhook(unraisable.exc_type, unraisable.exc_value, unraisable.exc_traceback)
 
 
