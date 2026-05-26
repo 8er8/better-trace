@@ -13,6 +13,7 @@ import difflib
 import os
 import linecache
 
+_has_rich: bool = True
 _safe_repr = reprlib.Repr()
 _safe_repr.maxlevel = 2
 _safe_repr.maxlist = 10
@@ -26,9 +27,12 @@ try:
     from rich.syntax import Syntax
     from rich.console import Console
 except ModuleNotFoundError:
-    raise ModuleNotFoundError(
-        "Please install rich via python3 -m pip install -r requirements.txt"
-    ) from None
+    warn(
+        "Download rich to get colors and syntax highlighting",
+        RuntimeWarning,
+        stacklevel=4,
+    )
+    _has_rich = False
 
 from ._did_you_mean import (
     suggest_name_error,
@@ -38,7 +42,7 @@ from ._did_you_mean import (
 )
 
 __all__ = ["initialize", "demo", "revert"]
-console = Console()
+console = Console() if _has_rich else None
 logging.basicConfig(
     filename="crash.log",
     format="%(asctime)s: %(levelname)s: %(message)s",
@@ -87,6 +91,13 @@ def _show_context(filename: str, lineno: int, context: int = 2):
     """
     start = max(1, lineno - context)
     end = lineno + context
+    if not _has_rich:
+        for i in range(start, end + 1):
+            line = linecache.getline(filename, i).rstrip("\n")
+            prefix = "❱ " if i == lineno else "  "
+            print(f"{prefix}{i:4} | {line}")
+        return
+    
     if os.path.exists(filename):
         console.print(
             Syntax.from_path(
@@ -157,9 +168,14 @@ def _print_notes(exc: BaseException) -> None:
     notes: list[str] | None = getattr(exc, "__notes__", None)
     if not notes:
         return
-    print("[cyan bold]\nNotes:[/cyan bold]")
+    if not _has_rich:
+        print("\nNotes:")
+    else:
+        print("[cyan bold]\nNotes:[/cyan bold]")
+
+    prefix = "[cyan]-[/cyan] " if _has_rich else "- "
     for note in notes:
-        print(f"  [cyan]-[/cyan] {note}")
+        print(f"  {prefix}{note}")
 
 
 def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: str = ""):
@@ -179,17 +195,27 @@ def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: st
     indent = "  " * level
 
     title = f"{index_prefix}" if index_prefix else "Exception Group"
-    print(f"{indent}[red]{title.center(50, '-')}[/red]")
-    print(f"[cyan][bold]Message[/bold]: {str(exc) or '<no message available>'}[/cyan]")
+    if not _has_rich:
+        print(f"{indent}{title.center(50, '-')}")
+        print(f"Message: {str(exc) or '<no message available>'}")
+    else:
+        print(f"{indent}[red]{title.center(50, '-')}[/red]")
+        print(f"[cyan][bold]Message[/bold]: {str(exc) or '<no message available>'}[/cyan]")
 
     for i, sub in enumerate(exc.exceptions, 1):
         new_prefix = f"{index_prefix}{i}." if index_prefix else f"{i}."
 
         if isinstance(sub, ExceptionGroup):
-            print(f"\n{indent}[cyan]Subgroup {new_prefix}[/cyan]")
+            if not _has_rich:
+                print(f"\n{indent}Supgroup {new_prefix}")
+            else:
+                print(f"\n{indent}[cyan]Subgroup {new_prefix}[/cyan]")
             _print_exception_group(sub, level + 1, new_prefix)
         else:
-            print(f"\n{indent}[cyan]Sub-exception {new_prefix}[/cyan]")
+            if not _has_rich:
+                print(f"\n{indent}Sub-exception {new_prefix}")
+            else:
+                print(f"\n{indent}[cyan]Sub-exception {new_prefix}[/cyan]")
             _print_tb(
                 f"Sub-exception {new_prefix}",
                 type(sub),
@@ -206,7 +232,10 @@ def _print_verbose(
     exc: BaseException,
     tb: TracebackType,
 ) -> None:
-    print(f"[red]{title}[/red]".center(50, "-") if title is not None else "")
+    if not _has_rich:
+        print(f"{title}".center(50, '-') if title is not None else "")
+    else:
+        print(f"[red]{title}[/red]".center(50, "-") if title is not None else "")
     prev_key = None
     count = 0
     prev_frame = None
@@ -347,10 +376,10 @@ def _print_context(
 
     if isinstance(exc, AttributeError):
         suggest_attribute_error(exc)
-    
+
     if isinstance(exc, ModuleNotFoundError):
         suggest_module_not_found_error(exc)
-    
+
     if isinstance(exc, ImportError):
         suggest_import_error(exc)
 
@@ -392,10 +421,10 @@ def _print_compact(
 
     if isinstance(exc, AttributeError):
         suggest_attribute_error(exc)
-    
+
     if isinstance(exc, ModuleNotFoundError):
         suggest_module_not_found_error(exc)
-   
+
     if isinstance(exc, ImportError):
         suggest_import_error(exc)
 
