@@ -226,6 +226,24 @@ def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: st
                 exceptgroup=True,
             )
 
+def _render_syntax_error(exc: SyntaxError) -> None:
+    line = exc.text.rstrip("\n").expandtabs(4)
+
+    start = (exc.offset or 1) - 1
+    end = (exc.end_offset or exc.offset or 1) - 1
+
+    if not _has_rich:  
+        print(f"Parsing-Error".center(50, "-"))
+        print(f'File "{exc.filename}", line {exc.lineno}')
+        print(f"[red]  {line}[/red]")
+        print(f'[red]  {" " * start + "^" * max(1, end - start)}[/red]')
+        print(f"{type(exc).__name__}: {exc.msg}")
+    else:
+        print(f"[red]Parsing-Error[/red]".center(50, "-"))
+        print(f'File "{exc.filename}", line {exc.lineno}')
+        print(f"[red]  {line}[/red]")
+        print(f'[red]  {" " * start + "^" * max(1, end - start)}[/red]')
+        print(f"[red][bold]{type(exc).__name__}[/bold]: {exc.msg}[/red]")
 
 def _print_verbose(
     title: str,
@@ -629,18 +647,7 @@ def _customhook(
             return
         if exc_type and issubclass(exc_type, SyntaxError):
             if tb is None and exc is not None:
-                if not _has_rich:
-                    print("SyntaxError (detected in excepthook._customhook):")
-                    print(f'File "{exc.filename}", line {exc.lineno}')
-                    print(f"  {exc.text.rstrip()}")
-                    print(f'{" " * (exc.offset + 1) + "^^"}')
-                    print(f"{exc_type.__name__}: {exc.msg}")
-                else:
-                    print("[red]SyntaxError (detected in excepthook._customhook):[/red]")
-                    print(f'File "{exc.filename}", line {exc.lineno}')
-                    print(f"  [red]{exc.text.rstrip()}[/red]")
-                    print(f'[red]{" " * (exc.offset + 1) + "^^"}[/red]')
-                    print(f"[red][bold]{exc_type.__name__}[/bold]: {exc.msg}[/red]")
+                _render_syntax_error(exc)
                 return
         if isinstance(exc, ExceptionGroup):
             _print_exception_group(exc)
