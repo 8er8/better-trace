@@ -235,8 +235,8 @@ def _render_syntax_error(exc: SyntaxError) -> None:
     if not _has_rich:  
         print(f"Parsing-Error".center(50, "-"))
         print(f'File "{exc.filename}", line {exc.lineno}')
-        print(f"[red]  {line}[/red]")
-        print(f'[red]  {" " * start + "^" * max(1, end - start)}[/red]')
+        print(f"  {line}")
+        print(f'  {" " * start + "^" * max(1, end - start)}')
         print(f"{type(exc).__name__}: {exc.msg}")
     else:
         print(f"[red]Parsing-Error[/red]".center(50, "-"))
