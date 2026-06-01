@@ -14,5 +14,5 @@ source_suffix = {
 html_theme = "furo"
 
 autoapi_type = "python"
-autoapi_dirs = ["../src/better_trace"]
+autoapi_dirs = ["../../src/better_trace"]
 root_doc = "index"
