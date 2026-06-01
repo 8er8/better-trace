@@ -51,6 +51,11 @@ dev = [
     "build",
     "twine",
 ]
+docs = [
+    "sphinx",
+    "myst-parser",
+    "furo",
+]
 
 [project.urls]
 Homepage = "https://github.com/8er8/better-trace"
