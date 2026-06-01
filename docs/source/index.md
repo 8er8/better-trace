@@ -1,9 +1,12 @@
 # better-trace
-A colorful, context-rich traceback formatter for python
 
-## Installation
-`python3 -m pip install better-trace`
+A colorful, context-rich traceback formatter for Python.
 
-## Test locally
-From project root:
-`sphinx-build -b html docs/source docs/build`
+```{toctree}
+:maxdepth: 2
+:caption: Contents:
+
+installation
+usage
+api
+```

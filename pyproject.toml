@@ -55,6 +55,7 @@ docs = [
     "sphinx",
     "myst-parser",
     "furo",
+    "sphinx-autoapi"
 ]
 
 [project.urls]

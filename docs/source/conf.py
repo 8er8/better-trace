@@ -4,6 +4,7 @@ release = "0.1.2"
 
 extensions = [
     "myst_parser",
+    "autoapi.extension"
 ]
 source_suffix = {
     ".rst": "restructuredtext",
@@ -11,3 +12,6 @@ source_suffix = {
 }
 
 html_theme = "furo"
+
+autoapi_type = "python"
+autoapi_dirs = ["../../better_trace"]
