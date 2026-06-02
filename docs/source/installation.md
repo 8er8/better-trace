@@ -8,8 +8,10 @@ You can install better-trace via pip by
 ``` bash
 python3 -m pip install better-trace
 ```
-> *Note*:
-`python3` may not be available for Windows, so use `python` or `py`.
+:::{note}
+`python3` may not be available for Windows, so use `python` or `py`
+:::
+
 
 ## Verify the installation
 Run this code to verify if the installation succeeded:
