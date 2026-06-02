@@ -37,14 +37,15 @@ better_trace.initialize(
     background_color="default",
 )
 ```
-| Option | Description |
-| ----------|-------------- |
-| show_locals  |   Shows locals at crash site (default=True)       | 
-| log_exceptions | Logs exceptions to crash.log (default=False) |
-| debugger | Enables pdb after exception (default=False)|
-| mode | Output style (verbose, context, compact, minimal) (default="verbose") |
-| theme | The syntax highlighting theme (default="monokai") |
-| background_color | The background color (default="default")|
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| show_locals | `bool` | `True` | Shows locals at crash site |
+| log_exceptions | `bool` | `False` | Logs exceptions to crash.log |
+| debugger | `bool` | `False` | Enables pdb after exception |
+| mode | `str` | `"verbose"` | Output style (verbose, context, compact, minimal) |
+| theme | `str` | `monokai` | The syntax highlighting theme |
+| background_color | `str` | `default` | The background color |
 
 ## Behavior
 This tool overrides the global Python exception handler (`sys.excepthook`) for the current process.

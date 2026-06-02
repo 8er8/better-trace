@@ -1,4 +1,5 @@
-from .better_trace import initialize, revert, demo
+from importlib.metadata import version
+from .better_trace import initialize, demo, revert
 
-__all__ = ['initialize', 'revert', 'demo']
-__version__ = "0.1.2"
+__all__ = ['initialize', 'demo', 'revert']
+__version__ = version("better-trace")

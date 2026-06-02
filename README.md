@@ -2,6 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-Yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org/project/better-trace)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
+[![Docs](https://readthedocs.org/projects/better-trace/badge/?version=latest&style=flat)](https://.readthedocs.io/)
 
 
 A Python tool to make tracebacks colorful, context-rich, developer friendly, and turns  
@@ -19,24 +20,21 @@ python crashes to something you can easily read
 - Thread + Unraisable hooks
 - Optional logging to file
 - Built-in post mortem debugger (pdb)
-## Installation
-### Cloning github repo
-You can install better-trace by cloning the git directory by  
-`git clone https://github.com/8er8/better-trace.git`  
-Now you can choose one of the following options to install better-trace
-#### Option 1: Install normally (recommended) 
-`cd better-trace`  
-`python3 -m pip install .`  
-#### Option 2: Install in editable mode (best for development)
-`cd better-trace`  
-`python3 -m pip install -e .`
 
-### Install using PyPI
-Type this command to your shell--  
-`python3 -m pip install better-trace`
-#### Notes
-- Requires Python >= 3.11
-- `python3` may not work on windows, so use `python` or `py`
+## Installation
+Type this command to your shell:  
+``` bash
+python3 -m pip install better-trace
+```
+> *Note*: Requires python >= 3.11; `python3` may not work on windows, so use `python` or `py`
+
+## Installation for contributors
+Clone the better-trace github repo and install better-trace (in editable mode)
+``` bash
+git clone https://github.com/8er8/better-trace.git
+cd better-trace
+python3 -m pip install -e .
+```
 ## Quick example
 ``` python 
 from better_trace import initialize
@@ -57,50 +55,60 @@ initialize(
     background_color="default",
 )
 ```
-| Option | Description |
-| ----------|-------------- |
-| show_locals  |   Shows locals at crash site (default=True)       | 
-| log_exceptions | Logs exceptions to crash.log (default=False) |
-| debugger | Enables pdb after exception (default=False)|
-| mode | Output style (verbose, context, compact, minimal) (default="verbose") |
-| theme | The syntax highlighting theme (default="monokai") |
-| background_color | The background color (default="default")|
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| show_locals | `bool` | `True` | Shows locals at crash site |
+| log_exceptions | `bool` | `False` | Logs exceptions to crash.log |
+| debugger | `bool` | `False` | Enables pdb after exception |
+| mode | `str` | `"verbose"` | Output style (verbose, context, compact, minimal) |
+| theme | `str` | `monokai` | The syntax highlighting theme |
+| background_color | `str` | `default` | The background color |
 ## Mode preview
+
 ### Verbose
 full traceback + locals + context  
 Shows everything  
 ![Verbose mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_verbose.png)
+
 ### Context
 Balanced output with surrounding lines  
 ![Context mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_context.png)
+
 ### Compact
 Short and readable  
 ![Compact mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_compact.png)
+
 ### Minimal
 Just the last frame and the error line  
 ![Minimal mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_minimal.png)
+
 ## Better-trace demo
 ``` python
 from better_trace import demo
 
 demo()
 ```
+
 ## Reverting back
 ``` python
 from better_trace import revert
 
 revert()
 ```
+
 ## Before and After
+
 ### Before
 ``` text
 Traceback (most recent call last):
   File "C:\python\Adamya\a.py", line 10, in <module>
     main()
   File "C:\python\Adamya\a.py", line 7, in main
-    print(my_var)
+    print(my_va)
 NameError: name 'my_va' is not defined
 ```
+
 ### After
 ![Better-trace output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_verbose.png)
 
@@ -118,18 +126,25 @@ But better-trace makes tracebacks easier to read by--
 - Requires `rich`
 - Works best in modern terminals
 - Designed for developer experience (not beginner-oriented)
+
 ## Credits
+
 ### Main developer
 **Adamya Mondal** - creator, designer, and maintainer of this project
+
 ### Built with
 - Python Standard Library
 - rich (Huge credits to developers of rich)
+
 ### Inspiration
 Python's default traceback is really minimal    
 So we fixed it to make it more
 developer-friendly
+
 ### Contributions
 - **Adamya Mondal** (for being the main dev)
 - Open for contributors
+> *Note*: Contributors who are willing to contribute better-trace should read the 'Installation for contributors' section
+
 ### License
 This project is licensed under the MIT license

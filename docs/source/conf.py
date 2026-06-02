@@ -1,6 +1,6 @@
 project = "better-trace"
 author = "Adamya Mondal"
-release = "0.1.2"
+release = "0.2.0"
 
 extensions = [
     "myst_parser",
