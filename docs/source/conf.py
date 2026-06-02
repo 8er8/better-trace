@@ -6,6 +6,9 @@ extensions = [
     "myst_parser",
     "autoapi.extension"
 ]
+myst_enable_extensions = [
+    "colon_fence",
+]
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
