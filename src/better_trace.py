@@ -226,24 +226,28 @@ def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: st
                 exceptgroup=True,
             )
 
-def _render_syntax_error(exc: SyntaxError) -> None:
+
+def _render_syntax_error(exc: SyntaxError, heading: bool = True) -> None:
     line = exc.text.rstrip("\n").expandtabs(4)
 
     start = (exc.offset or 1) - 1
     end = (exc.end_offset or exc.offset or 1) - 1
 
-    if not _has_rich:  
-        print(f"Parsing-Error".center(50, "-"))
+    if not _has_rich:
+        if heading:
+            print(f"Parsing Error".center(50, "-"))
         print(f'File "{exc.filename}", line {exc.lineno}')
         print(f"  {line}")
         print(f'  {" " * start + "^" * max(1, end - start)}')
         print(f"{type(exc).__name__}: {exc.msg}")
     else:
-        print(f"[red]Parsing-Error[/red]".center(50, "-"))
+        if heading:
+            print(f"[red]Parsing Error[/red]".center(50, "-"))
         print(f'File "{exc.filename}", line {exc.lineno}')
         print(f"[red]  {line}[/red]")
         print(f'[red]  {" " * start + "^" * max(1, end - start)}[/red]')
         print(f"[red][bold]{type(exc).__name__}[/bold]: {exc.msg}[/red]")
+
 
 def _print_verbose(
     title: str,
@@ -351,11 +355,26 @@ def _print_verbose(
 
     name = exc_type.__name__ or "UnknownError"
     msg = str(exc) or "<no message provided>"
-
-    if not _has_rich:
-        print(f"{name}: {msg}")
+    issyntaxerror = isinstance(exc, SyntaxError)
+    if not issyntaxerror:
+        has_filename = False
+        has_len = False
+    elif (exc.filename is None) or (exc.lineno is None):
+        has_filename = False
+        has_len = False
     else:
-        print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
+        has_filename = True
+        has_len = True
+
+    if not (issyntaxerror and has_filename and has_len):
+        if not _has_rich:
+            print(f"{name}: {msg}")
+        else:
+            print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
+
+    if issyntaxerror and has_filename and has_len:
+        _render_syntax_error(exc, heading=False)
+
     if isinstance(exc, NameError):
         suggest_name_error(exc, tb)
 
@@ -444,11 +463,26 @@ def _print_context(
 
     name = exc_type.__name__ or "UnknownError"
     msg = str(exc) or "<no message provided>"
-
-    if not _has_rich:
-        print(f"{name}: {msg}")
+    issyntaxerror = isinstance(exc, SyntaxError)
+    if not issyntaxerror:
+        has_filename = False
+        has_len = False
+    elif (exc.filename is None) or (exc.lineno is None):
+        has_filename = False
+        has_len = False
     else:
-        print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
+        has_filename = True
+        has_len = True
+
+    if not (issyntaxerror and has_filename and has_len):
+        if not _has_rich:
+            print(f"{name}: {msg}")
+        else:
+            print(f"[red][bold]{name}[/bold][/red]: [red]{msg}[/red]")
+
+    if issyntaxerror and has_filename and has_len:
+        _render_syntax_error(exc, heading=False)
+
     if isinstance(exc, NameError):
         suggest_name_error(exc, tb)
 
@@ -658,7 +692,7 @@ def _customhook(
                 print(
                     "\n----The above exception was the cause of the other exception below----\n"
                 )
-            else:   
+            else:
                 print(
                     "\n----[red]The above exception was the cause of the other exception below[/red]----\n"
                 )
@@ -670,7 +704,7 @@ def _customhook(
                 print(
                     "\n----While handling the previous exception, a new exception has occurred----\n"
                 )
-            else:  
+            else:
                 print(
                     "\n----[red]While handling the previous exception, a new exception has occurred[/red]----\n"
                 )
@@ -681,15 +715,15 @@ def _customhook(
             import pdb  # pdb for python debugger bulls--(this comment got cut due to some reason)
 
             if not _has_rich:
-                print("\nDebugger active. Type 'q' to quit.")   
-            else:   
+                print("\nDebugger active. Type 'q' to quit.")
+            else:
                 print("\n[cyan]Debugger active. Type 'q' to quit.[/cyan]")
             pdb.post_mortem(tb)
     except BaseException as e:
         if isinstance(e, KeyboardInterrupt):
             if not _has_rich:
                 print("ERROR: User interrupt")
-            else:  
+            else:
                 print("[red][bold]ERROR[/bold]: User interrupt[/red]")
             return
         else:
@@ -718,7 +752,7 @@ def _threadhook(args: threading.ExceptHookArgs):
     """
     if not _has_rich:
         print(f"Exception in {args.thread.name}")
-    else:  
+    else:
         print(f"[cyan]Exception in {args.thread.name}[/cyan]")
     _customhook(args.exc_type, args.exc_value, args.exc_traceback)
 
