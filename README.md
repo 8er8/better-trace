@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-Yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org/project/better-trace)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
-[![Docs](https://readthedocs.org/projects/better-trace/badge/?version=latest&style=flat)](https://.readthedocs.io/)
+[![Docs](https://readthedocs.org/projects/better-trace/badge/?version=latest&style=flat)](https://better-trace.readthedocs.io/)
 
 
 A Python tool to make tracebacks colorful, context-rich, developer friendly, and turns  
