@@ -103,7 +103,7 @@ def suggest_import_error(exc: ImportError) -> None:
     
     try:
         module = importlib.import_module(exc.name)
-    except ModuleNotFoundError:
+    except Exception:
         return
     
     all_items = dir(module)
