@@ -9,4 +9,5 @@ A colorful, context-rich traceback formatter for Python.
 installation
 usage
 api
+faq
 ```
