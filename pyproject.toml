@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 
+[project.scripts]
+better-trace = "better_trace.__main__:app"
+
 authors = [
     { name = "Adamya Mondal" }
 ]
@@ -39,7 +42,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "rich>=13.7.0"
+    "rich>=13.7.0",
+    "typer"
 ]
 
 [project.optional-dependencies]

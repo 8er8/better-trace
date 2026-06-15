@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ### Added
 - Actual SyntaxError frame if it is a runtime error
+- CLI support
 
 ## [0.2.0] - 2026-06-02
 
