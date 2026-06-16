@@ -13,9 +13,6 @@ authors = [
     { name = "Adamya Mondal" }
 ]
 
-[project.scripts]
-better-trace = "better_trace.__main__:app"
-
 keywords = [
     "traceback",
     "exceptions",
@@ -60,6 +57,9 @@ docs = [
     "furo",
     "sphinx-autoapi"
 ]
+
+[project.scripts]
+better-trace = "better_trace.__main__:app"
 
 [project.urls]
 Homepage = "https://github.com/8er8/better-trace"
