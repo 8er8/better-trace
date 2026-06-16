@@ -38,6 +38,6 @@ def run(
 
 @app.command()
 def demo():
-    from ... import demo
+    from . import demo
 
     demo()
