@@ -45,6 +45,18 @@ import_module("maths")
 ```
 In this scenario, it would highlight the line, show the surrounding context, and also suggest the most similar module name
 
+## Example: CLI mode
+```python
+# main.py
+def div(x, y):
+    return x / y
+
+print(10, 0)
+```
+```bash
+better-trace run main.py --mode verbose --sh
+```
+It would run main.py in verbose mode
 ## Disable formatter
 To disable formatter, do
 ``` python

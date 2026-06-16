@@ -2,6 +2,13 @@
 requires = ["setuptools>=69.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project]
 name = "better-trace"
 version = "0.2.0"
@@ -65,9 +72,6 @@ better-trace = "better_trace.__main__:app"
 Homepage = "https://github.com/8er8/better-trace"
 Repository = "https://github.com/8er8/better-trace"
 Issues = "https://github.com/8er8/better-trace/issues"
-
-[tool.setuptools]
-include-package-data = true
 
 [tool.black]
 line-length = 88

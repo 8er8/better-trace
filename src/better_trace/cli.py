@@ -1,8 +1,6 @@
 import typer
 import runpy
 import sys
-import platform
-from importlib.util import find_spec
 
 from . import initialize
 
@@ -40,6 +38,6 @@ def run(
 
 @app.command()
 def demo():
-    from . import demo
+    from ... import demo
 
     demo()
