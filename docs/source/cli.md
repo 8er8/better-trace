@@ -1,7 +1,7 @@
 # CLI
 
 ## Description
-You can run better-trace by using your shell. It is good if you want to not modify a python file.
+You can run better-trace by using your shell. It is good if you don't want to modify a python file.
 
 ## Basic usage
 ```bash
