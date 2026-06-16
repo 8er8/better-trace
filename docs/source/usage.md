@@ -56,7 +56,7 @@ print(div(10, 0))
 ```bash
 better-trace run main.py --mode verbose --show-locals
 ```
-It would run main.py in verbose mode
+It would run main.py in verbose mode and would show local variables
 ## Disable formatter
 To disable formatter, do
 ``` python
