@@ -51,10 +51,10 @@ In this scenario, it would highlight the line, show the surrounding context, and
 def div(x, y):
     return x / y
 
-print(10, 0)
+print(div(10, 0))
 ```
 ```bash
-better-trace run main.py --mode verbose --sh
+better-trace run main.py --mode verbose --show-locals
 ```
 It would run main.py in verbose mode
 ## Disable formatter
