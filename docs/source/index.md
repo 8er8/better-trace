@@ -11,7 +11,7 @@ Welcome to the official documentation for `better-trace`!
 - CLI support
 
 ### Fixed
-- README Formatting
+- `README` Formatting
 
 ```{toctree}
 :maxdepth: 2

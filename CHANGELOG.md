@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 - CLI support
 
 ### Fixed
-- README Formatting
+- `README` Formatting
 
 ## [0.2.0] - 2026-06-02
 
