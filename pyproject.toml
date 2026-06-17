@@ -11,7 +11,7 @@ where = ["src"]
 
 [project]
 name = "better-trace"
-version = "0.2.0"
+version = "0.3.0"
 description = "A colorful, context-rich traceback formatter for Python"
 readme = "README.md"
 requires-python = ">=3.11"
