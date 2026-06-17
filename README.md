@@ -3,10 +3,11 @@
 [![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org/project/better-trace)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
 [![Docs](https://readthedocs.org/projects/better-trace/badge/?version=latest&style=flat)](https://better-trace.readthedocs.io/)
+[![Code style: black](https://img.shields.io/badge/formatting-black-black.svg)](https://github.com/psf/black)
 
 
-A Python tool to make tracebacks colorful, context-rich, developer friendly, and turns  
-python crashes to something you can easily read
+A Python tool to make tracebacks colorful, context-rich, developer-friendly, and visually easier to read
+
 ## Features
 - A colorful traceback powered by rich
 - Multiple modes
@@ -23,20 +24,21 @@ python crashes to something you can easily read
 
 ## Installation
 Type this command to your shell:  
-``` bash
+```bash
 python3 -m pip install better-trace
 ```
 > *Note*: Requires python >= 3.11; `python3` may not work on windows, so use `python` or `py`
 
 ## Installation for contributors
 Clone the better-trace github repo and install better-trace (in editable mode)
-``` bash
+```bash
 git clone https://github.com/8er8/better-trace.git
 cd better-trace
 python3 -m pip install -e .
 ```
+
 ## Quick example
-``` python 
+```python 
 from better_trace import initialize
 
 initialize()
@@ -45,7 +47,7 @@ initialize()
 1 / 0
 ```
 ## Configuration
-``` python 
+```python 
 initialize(
     show_locals=True,
     log_exceptions=False,
@@ -58,12 +60,13 @@ initialize(
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| show_locals | `bool` | `True` | Shows locals at crash site |
-| log_exceptions | `bool` | `False` | Logs exceptions to crash.log |
-| debugger | `bool` | `False` | Enables pdb after exception |
-| mode | `str` | `"verbose"` | Output style (verbose, context, compact, minimal) |
-| theme | `str` | `monokai` | The syntax highlighting theme |
-| background_color | `str` | `default` | The background color |
+| `show_locals` | `bool` | `True` | Shows locals at crash site |
+| `log_exceptions` | `bool` | `False` | Logs exceptions to `crash.log` |
+| `debugger` | `bool` | `False` | Enables `pdb` post mortem debugging |
+| `mode` | `str` | `"verbose"` | Output style (`verbose`, `context`, `compact`, `minimal`) |
+| `theme` | `str` | `"monokai"` | The syntax highlighting theme |
+| `background_color` | `str` | `"default"` | The background color |
+
 ## Mode preview
 
 ### Verbose
@@ -84,14 +87,14 @@ Just the last frame and the error line
 ![Minimal mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_minimal.png)
 
 ## Better-trace demo
-``` python
+```python
 from better_trace import demo
 
 demo()
 ```
 
 ## Reverting back
-``` python
+```python
 from better_trace import revert
 
 revert()
@@ -100,7 +103,7 @@ revert()
 ## Before and After
 
 ### Before
-``` text
+```text
 Traceback (most recent call last):
   File "C:\python\Adamya\a.py", line 10, in <module>
     main()
@@ -123,7 +126,7 @@ But better-trace makes tracebacks easier to read by--
 - And much more 
 
 ## Notes
-- Requires `rich`
+- Optionally requires `rich`
 - Works best in modern terminals
 - Designed for developer experience (not beginner-oriented)
 

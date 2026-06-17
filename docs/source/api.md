@@ -40,12 +40,12 @@ better_trace.initialize(
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| show_locals | `bool` | `True` | Shows locals at crash site |
-| log_exceptions | `bool` | `False` | Logs exceptions to crash.log |
-| debugger | `bool` | `False` | Enables pdb after exception |
-| mode | `str` | `"verbose"` | Output style (verbose, context, compact, minimal) |
-| theme | `str` | `monokai` | The syntax highlighting theme |
-| background_color | `str` | `default` | The background color |
+| `show_locals` | `bool` | `True` | Shows locals at crash site |
+| `log_exceptions` | `bool` | `False` | Logs exceptions to `crash.log` |
+| `debugger` | `bool` | `False` | Enables `pdb` post mortem debugging |
+| `mode` | `str` | `"verbose"` | Output style (`verbose`, `context`, `compact`, `minimal`) |
+| `theme` | `str` | `"monokai"` | The syntax highlighting theme |
+| `background_color` | `str` | `"default"` | The background color |
 
 ## Behavior
 This tool overrides the global Python exception handler (`sys.excepthook`) for the current process.
