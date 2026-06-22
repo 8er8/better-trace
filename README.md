@@ -64,7 +64,7 @@ initialize(
 | `show_locals` | `bool` | `True` | Shows locals at crash site |
 | `log_exceptions` | `bool` | `False` | Logs exceptions to `crash.log` |
 | `debugger` | `bool` | `False` | Enables `pdb` post mortem debugging |
-| `mode` | `str` | `"verbose"` | Output style (`verbose`, `context`, `compact`, `minimal`) |
+| `mode` | `str` | `"verbose"` | Output style (`debug`, `verbose`, `context`, `compact`, `minimal`) |
 | `theme` | `str` | `"monokai"` | The syntax highlighting theme |
 | `background_color` | `str` | `"default"` | The background color |
 
