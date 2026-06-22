@@ -126,7 +126,7 @@ But better-trace makes tracebacks easier to read by--
 - Making tracebacks easier to read
 - Giving more info
 - Coloring and syntax higlighting powered by rich
-- Four different modes
+- Five different modes
 - And much more 
 
 ## Notes
