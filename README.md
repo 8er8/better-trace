@@ -1,17 +1,18 @@
-# Better-trace
+<img src="https://raw.githubusercontent.com/8er8/better-trace/refs/heads/main/assets/logo.png" height="90">
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-Yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI Version](https://img.shields.io/pypi/v/better-trace.svg)](https://pypi.org/project/better-trace)
 [![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)](https://python.org)
 [![Docs](https://readthedocs.org/projects/better-trace/badge/?version=latest&style=flat)](https://better-trace.readthedocs.io/)
 [![Code style: black](https://img.shields.io/badge/formatting-black-black.svg)](https://github.com/psf/black)
 
-
 A Python tool to make tracebacks colorful, context-rich, developer-friendly, and visually easier to read
 
 ## Features
 - A colorful traceback powered by rich
 - Multiple modes
-    - Verbose - Gives you all the information
+    - Debug - Gives you helpful debugging information
+    - Verbose - Gives a lot of information
     - Context - A balanced view of the traceback (Recommended)
     - Compact - Shows only the last 3 frames, good for quick debugging
     - Minimal - Shows only the last frame, containing the essentials to quickly debug, not for advanced debugging
@@ -69,9 +70,12 @@ initialize(
 
 ## Mode preview
 
+### Debug
+Full traceback + locals on every frames + 3 line context + a call stack tree
+![Debug mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_debug.png)
+
 ### Verbose
-full traceback + locals + context  
-Shows everything  
+Full traceback + locals + context
 ![Verbose mode output](https://github.com/8er8/better-trace/raw/main/assets/better_trace_verbose.png)
 
 ### Context

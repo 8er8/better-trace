@@ -388,30 +388,13 @@ def _print_debug(
         print("Call stack:")
 
     indentation = 3
-    frames_length = len(frames)
     for frame in frames:
         if _has_rich:
-            if frames_length != 1:
-                print(f"{' ' * indentation} └─ [cyan][bold]{frame.name}[/bold][/cyan]")
-                indentation += 3
-                frames_length -= 1
-            else:
-                print(f"{' ' * indentation} └─ ", end="")
-                console.print(
-                    Syntax(
-                        frame.line,
-                        "python",
-                        theme=config.theme,
-                        background_color=config.background_color,
-                    )
-                )
+            print(f"{' ' * indentation} └─ [cyan][bold]{frame.name}[/bold][/cyan]")
+            indentation += 3
         else:
-            if frames_length != 1:
-                print(f"{' ' * indentation} └─ {frame.name}")
-                indentation += 3
-                frames_length -= 1
-            else:
-                print(f"{' ' * indentation} └─ {frame.line}")
+            print(f"{' ' * indentation} └─ {frame.name}")
+            indentation += 3
     print("─" * 40)
 
     name = exc_type.__name__ or "UnknownError"
