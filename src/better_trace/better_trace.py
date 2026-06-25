@@ -386,15 +386,49 @@ def _print_debug(
         print("[yellow]Call stack:[/yellow]")
     else:
         print("Call stack:")
-
+    prev_key = None
+    count = 0
+    prev_frame = None
     indentation = 3
     for frame in frames:
-        if _has_rich:
-            print(f"{' ' * indentation} └─ [cyan][bold]{frame.name}[/bold][/cyan]")
-            indentation += 3
+        key = (frame.filename, frame.name)
+        if key == prev_key:
+            count += 1
         else:
-            print(f"{' ' * indentation} └─ {frame.name}")
-            indentation += 3
+            if prev_frame:
+                if _has_rich:
+                    if count > 3:
+                        print(f"...")
+                    else:
+                        print(
+                            f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                        )
+
+                    indentation += 3
+                else:
+                    if count > 3:
+                        print(f"...")
+                    else:
+                        print(f"{' ' * indentation} └─ {prev_frame.name}")
+                    indentation += 3
+            prev_frame = frame
+            prev_key = key
+            count = 1
+        if prev_frame:
+            if _has_rich:
+                if count > 3:
+                    print(f"...")
+                else:
+                    print(
+                        f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                    )
+                indentation += 3
+            else:
+                if count > 3:
+                    print(f"...")
+                else:
+                    print(f"{' ' * indentation} └─ {prev_frame.name}")
+                indentation += 3
     print("─" * 40)
 
     name = exc_type.__name__ or "UnknownError"
