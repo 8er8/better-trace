@@ -390,6 +390,7 @@ def _print_debug(
     count = 0
     prev_frame = None
     indentation = 3
+
     for frame in frames:
         key = (frame.filename, frame.name)
         if key == prev_key:
@@ -398,37 +399,53 @@ def _print_debug(
             if prev_frame:
                 if _has_rich:
                     if count > 3:
-                        print(f"...")
-                    else:
                         print(
                             f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                            + f" [bold cyan](x{count-1})[/bold cyan]"
                         )
+                    else:
+                        for _ in range(count):
+                            print(
+                                f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                            )
+                            indentation += 3
 
                     indentation += 3
                 else:
                     if count > 3:
-                        print(f"...")
+                        print(
+                            f"{' ' * indentation}└─ {prev_frame.name}" + f" {count-1}"
+                        )
+
                     else:
-                        print(f"{' ' * indentation} └─ {prev_frame.name}")
-                    indentation += 3
+                        for _ in range(count):
+                            print(f"{' ' * indentation}└─ {prev_frame.name}")
+                            indentation += 3
             prev_frame = frame
             prev_key = key
             count = 1
-        if prev_frame:
-            if _has_rich:
-                if count > 3:
-                    print(f"...")
-                else:
+    if prev_frame:
+        if _has_rich:
+            if count > 3:
+                print(
+                    f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                    + f" [bold cyan](x{count-1})[/bold cyan]"
+                )
+            else:
+                for _ in range(count):
                     print(
                         f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                     )
-                indentation += 3
+                    indentation += 3
+        else:
+            if count > 3:
+                print(f"{' ' * indentation}└─ {prev_frame.name}" + f" (x{count-1})")
             else:
-                if count > 3:
-                    print(f"...")
-                else:
-                    print(f"{' ' * indentation} └─ {prev_frame.name}")
-                indentation += 3
+                for _ in range(count):
+                    print(
+                        f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                    )
+                    indentation += 3
     print("─" * 40)
 
     name = exc_type.__name__ or "UnknownError"
