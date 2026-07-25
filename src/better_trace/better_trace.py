@@ -13,6 +13,7 @@ import logging
 import difflib
 import os
 import linecache
+import tomllib
 
 _has_rich: bool = True
 _safe_repr = reprlib.Repr()
@@ -215,53 +216,59 @@ def _print_notes(exc: BaseException) -> None:
         print(f"  {prefix}{note}")
 
 
-def _print_exception_group(exc: ExceptionGroup, level: int = 0, index_prefix: str = ""):
+def _print_exception_group(
+    group: ExceptionGroup,
+    tb: TracebackType,
+    prefix="",
+    index_prefix="",
+    is_root=True,
+):
     """
     _print_exception_group is used to print the message if the exception type was an ExceptionGroup.
-    Args:
-        exc (ExceptionGroup): The ExceptionGroup instance
-        level (int): The level of index (default = 0)
-        index_prefix (str): Basically the title (default = '')
-    Returns:
-        None
-    ## Used by:
-        _customhook
-    ## Notes:
-        This is an internal function, so don't call it.
     """
-    indent = "  " * level
 
-    title = f"{index_prefix}" if index_prefix else "Exception Group"
-    if not _has_rich:
-        print(f"{indent}{title.center(50, '─')}")
-        print(f"Message: {str(exc) or '<no message available>'}")
-    else:
-        print(f"{indent}[red]{title.center(50, '─')}[/red]")
-        print(
-            f"[cyan][bold]Message[/bold]: {str(exc) or '<no message available>'}[/cyan]"
-        )
+    if is_root:
+        _print_tb("Exception group error", type(group), group, tb)
 
-    for i, sub in enumerate(exc.exceptions, 1):
-        new_prefix = f"{index_prefix}{i}." if index_prefix else f"{i}."
+    children = group.exceptions
 
-        if isinstance(sub, ExceptionGroup):
+    for i, exc in enumerate(children, start=1):
+        last = i == len(children)
+
+        branch = "└── " if last else "├── "
+        child_prefix = prefix + ("    " if last else "│   ")
+
+        number = f"{index_prefix}.{i}" if index_prefix else str(i)
+
+        if isinstance(exc, ExceptionGroup):
             if not _has_rich:
-                print(f"\n{indent}Supgroup {new_prefix}")
+                print(prefix + branch + f"{number}. " + f"ExceptionGroup: {exc}")
             else:
-                print(f"\n{indent}[cyan]Subgroup {new_prefix}[/cyan]")
-            _print_exception_group(sub, level + 1, new_prefix)
+                print(
+                    prefix
+                    + branch
+                    + f"[cyan bold]{number}.[/cyan bold] "
+                    + f"[red][bold]ExceptionGroup[/bold]: {exc}[/red]"
+                )
+
+            _print_exception_group(
+                exc,
+                tb,
+                child_prefix,
+                number,
+                False,
+            )
+
         else:
             if not _has_rich:
-                print(f"\n{indent}Sub-exception {new_prefix}")
+                print(prefix + branch + f"{number}. " + f"{type(exc).__name__}]: {exc}")
             else:
-                print(f"\n{indent}[cyan]Sub-exception {new_prefix}[/cyan]")
-            _print_tb(
-                f"Sub-exception {new_prefix}",
-                type(sub),
-                sub,
-                sub.__traceback__,
-                exceptgroup=True,
-            )
+                print(
+                    prefix
+                    + branch
+                    + f"[cyan bold]{number}.[/cyan bold] "
+                    + f"[red][bold]{type(exc).__name__}[/bold]: {exc}[/red]"
+                )
 
 
 def _render_syntax_error(exc: SyntaxError, heading: bool = True) -> None:
@@ -901,7 +908,8 @@ def _customhook(
                 _render_syntax_error(exc)
                 return
         if isinstance(exc, ExceptionGroup):
-            _print_exception_group(exc)
+            _print_exception_group(exc, tb)
+            return
         if exc and exc.__cause__:
             cause = exc.__cause__
             _print_tb("An error occurred", type(cause), cause, cause.__traceback__)
@@ -1001,6 +1009,7 @@ def initialize(
     mode="verbose",
     theme="monokai",
     background_color="default",
+    use_config=False,
 ) -> None:
     """
     initialize() sets sys.excepthook, threading.excepthook and sys.unraisablehook to the custom hook
@@ -1023,6 +1032,20 @@ def initialize(
         - This function is the opposite to revert, if you want to revert back to the original traceback, call revert
     """
     # if you understood the reference in the docstring example, you're a weebster ;)
+    if use_config:
+        try:
+            with open("better_trace_config.toml", "rb") as f:
+                config_file = tomllib.load(f)
+                cfg = config_file.get("better_trace", {})
+                mode = cfg.get("mode", mode)
+                show_locals = cfg.get("show_locals", show_locals)
+                theme = cfg.get("theme", theme)
+                background_color = cfg.get("background_color", background_color)
+                log_exceptions = cfg.get("log_exceptions", log_exceptions)
+                debugger = cfg.get("debugger", debugger)
+        except OSError:
+            pass
+
     config.show_locals = show_locals
     config.log_exceptions = log_exceptions
     config.mode = _initialize_mode(mode)

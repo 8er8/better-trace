@@ -2,9 +2,29 @@ import typer
 import runpy
 import sys
 
-from . import initialize
+from . import initialize, __version__
 
 app = typer.Typer(no_args_is_help=True)
+
+
+def version_callback(value: bool):
+    if value:
+        typer.echo(__version__)
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: bool | None = typer.Option(
+        None,
+        "--version",
+        "-v",
+        callback=version_callback,
+        is_eager=True,
+        help="Show the CLI version and exit.",
+    ),
+):
+    pass
 
 
 @app.command()
@@ -16,6 +36,7 @@ def run(
     mode: str = "verbose",
     theme: str = "monokai",
     background_color: str = "default",
+    use_config: bool = False,
 ):
     initialize(
         show_locals=show_locals,
@@ -24,6 +45,7 @@ def run(
         mode=mode,
         theme=theme,
         background_color=background_color,
+        use_config=use_config,
     )
 
     if "--" in sys.argv:
@@ -33,7 +55,10 @@ def run(
         script_args = []
 
     sys.argv = [script] + script_args
-    runpy.run_path(script, run_name="__main__")
+    try:
+        runpy.run_path(script, run_name="__main__")
+    except FileNotFoundError:
+        typer.echo(f"File {script} does not exist.")
 
 
 @app.command()
