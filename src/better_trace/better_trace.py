@@ -14,6 +14,9 @@ import difflib
 import os
 import linecache
 import tomllib
+import io
+import keyword
+import tokenize
 
 _has_rich: bool = True
 _safe_repr = reprlib.Repr()
@@ -235,7 +238,7 @@ def _print_exception_group(
     for i, exc in enumerate(children, start=1):
         last = i == len(children)
 
-        branch = "└── " if last else "├── "
+        branch = "╰── " if last else "├── "
         child_prefix = prefix + ("    " if last else "│   ")
 
         number = f"{index_prefix}.{i}" if index_prefix else str(i)
@@ -345,13 +348,31 @@ def _print_debug(
                             f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
                         )
                 filtered = _give_filtered_locals(tb)
+                tokens = tokenize.generate_tokens(io.StringIO(frame.line).readline)
+
+                uvariables = {
+                    token.string
+                    for token in tokens
+                    if token.type == tokenize.NAME
+                    and not keyword.iskeyword(token.string)
+                }
+
                 if config.show_locals and filtered:
                     if not _has_rich:
                         print("Local variables:")
                     else:
                         print("[yellow]Local variables:[/yellow]")
                 for k, v, t in filtered:
-                    print(f" {k} ({t}) = {v}")
+                    if not _has_rich:
+                        if k in uvariables:
+                            print(f" {k} ({t}) = {v} (used)")
+                        else:
+                            print(f" {k} ({t}) = {v}")
+                    else:
+                        if k in uvariables:
+                            print(f" {k} ({t}) = {v} [green](used)[/green]")
+                        else:
+                            print(f" {k} ({t}) = {v}")
 
                 print("─" * 40)
                 tb = tb.tb_next
@@ -385,8 +406,17 @@ def _print_debug(
                     print("Local variables:")
                 else:
                     print("[yellow]Local variables:[/yellow]")
-            for k, v, t in filtered:
-                print(f" {k} ({t}) = {v}")
+                for k, v, t in filtered:
+                    if not _has_rich:
+                        if k in uvariables:
+                            print(f" {k} ({t}) = {v} (used)")
+                        else:
+                            print(f" {k} ({t}) = {v}")
+                    else:
+                        if k in uvariables:
+                            print(f" {k} ({t}) = {v} [green](used)[/green]")
+                        else:
+                            print(f" {k} ({t}) = {v}")
         print("─" * 40)
         tb = tb.tb_next
     if _has_rich:
@@ -396,7 +426,7 @@ def _print_debug(
     prev_key = None
     count = 0
     prev_frame = None
-    indentation = 3
+    indentation = 1
 
     for frame in frames:
         key = (frame.filename, frame.name)
@@ -407,27 +437,27 @@ def _print_debug(
                 if _has_rich:
                     if count > 3:
                         print(
-                            f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                            f"{' ' * indentation} ╰── [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                             + f" [bold cyan](x{count-1})[/bold cyan]"
                         )
                     else:
                         for _ in range(count):
                             print(
-                                f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                                f"{' ' * indentation} ╰── [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                             )
-                            indentation += 3
+                            indentation += 2
 
-                    indentation += 3
+                    indentation += 2
                 else:
                     if count > 3:
                         print(
-                            f"{' ' * indentation}└─ {prev_frame.name}" + f" {count-1}"
+                            f"{' ' * indentation}╰── {prev_frame.name}" + f" {count-1}"
                         )
 
                     else:
                         for _ in range(count):
-                            print(f"{' ' * indentation}└─ {prev_frame.name}")
-                            indentation += 3
+                            print(f"{' ' * indentation}╰── {prev_frame.name}")
+                            indentation += 2
             prev_frame = frame
             prev_key = key
             count = 1
@@ -435,24 +465,24 @@ def _print_debug(
         if _has_rich:
             if count > 3:
                 print(
-                    f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                    f"{' ' * indentation} ╰── [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                     + f" [bold cyan](x{count-1})[/bold cyan]"
                 )
             else:
                 for _ in range(count):
                     print(
-                        f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                        f"{' ' * indentation} ╰── [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                     )
-                    indentation += 3
+                    indentation += 2
         else:
             if count > 3:
-                print(f"{' ' * indentation}└─ {prev_frame.name}" + f" (x{count-1})")
+                print(f"{' ' * indentation}╰── {prev_frame.name}" + f" (x{count-1})")
             else:
                 for _ in range(count):
                     print(
-                        f"{' ' * indentation} └─ [cyan][bold]{prev_frame.name}[/bold][/cyan]"
+                        f"{' ' * indentation} ╰── [cyan][bold]{prev_frame.name}[/bold][/cyan]"
                     )
-                    indentation += 3
+                    indentation += 2
     print("─" * 40)
 
     name = exc_type.__name__ or "UnknownError"

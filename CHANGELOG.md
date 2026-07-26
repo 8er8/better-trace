@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org).
 
 ## Added
 - A new `debug` mode
+- used markers for `debug` mode
 
 ## Changed
-- Traceback formatting
+- Traceback formatting (now uses box characters)
+- ExceptionGroup formatting (uses a new tree structure)
 
 ## [0.3.0]  - 2026-06-17
 
