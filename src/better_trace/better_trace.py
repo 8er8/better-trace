@@ -53,13 +53,17 @@ logging.basicConfig(
     format="%(asctime)s: %(levelname)s: %(message)s",
     level=logging.ERROR,
 )
-#  |----------------|
-#  |  better-trace  |
-#  |----------------|
-# Traceback formatter for Python
-# contributors - Adamya (me!)
-# developers - Adamya (me!)
-# license - MIT
+#  ╭────────────────╮
+#  │  better-trace  │
+#  ╰────────────────╯
+#     better-trace
+#          ❤
+#       unicode
+# A colorful traceback formatter for Python
+# Contributors — Adamya (me!)
+# Developers — Adamya (me!)
+# License — MIT
+# Copyright (c) 2026 Adamya Mondal
 
 
 @dataclass(slots=True, repr=False, eq=False)

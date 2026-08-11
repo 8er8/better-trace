@@ -3,6 +3,8 @@ import platform
 import subprocess
 import importlib.util
 
+# TODO: Finish stuff
+
 
 def get_option() -> int:
     while True:
