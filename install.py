@@ -2,6 +2,12 @@ import sys
 import platform
 import subprocess
 import importlib.util
+import time
+
+
+def clear():
+    subprocess.run(["cls" if platform.system() == "Windows" else "clear"], shell=True)
+
 
 # TODO: Finish stuff
 
@@ -26,25 +32,40 @@ def comp_ver():
 
 
 def install():
+    clear()
+    print("╭───────────────────────────╮")
+    print("│    Installation Methods   │")
+    print("╰───────────────────────────╯")
     print("\nChoose an installation method:")
     print("1. PyPI (Recommended)")
     print("2. GitHub (For contributors; requires Git)")
+    print("3. Go back")
     installoption = get_option()
-    if installoption not in [1, 2]:
-        print("Please choose between 1 - 2!")
+    if installoption not in [1, 3]:
+        print("Please choose between 1 - 3!")
     if installoption == 1:
         pipinstall()
     elif installoption == 2:
         gitinstall()
+    elif installoption == 3:
+        clear()
+        main_menu_banner()
+        return
 
 
 def pipinstall():
+    clear()
     if not comp_ver():
         print("[!]Installation failed.")
         print(f"You're running Python {get_info()[1]}")
         return
     if importlib.util.find_spec("better_trace") is not None:
         print("better-trace is already installed!")
+        time.sleep(1)
+        print("Returning to the menu in 3 seconds...")
+        time.sleep(3)
+        clear()
+        main_menu_banner()
         return
     print("Installing better-trace...")
     result = subprocess.run(
@@ -62,11 +83,15 @@ def pipinstall():
         )
         print("\nFull output:")
         print(result.stderr)
-    print("Returning to the menu...")
+    print("Returning to the menu in 3 seconds...")
+    time.sleep(3)
+    clear()
+    main_menu_banner()
     return
 
 
 def gitinstall():
+    clear()
     import shutil
     import pathlib
 
@@ -136,19 +161,26 @@ def gitinstall():
         print("Please check the output.")
         print("Output:")
         print(result.stderr)
-    print("Returning to the menu...")
+    print("Returning to the menu in 3 seconds...")
+    time.sleep(3)
+    clear()
+    main_menu_banner()
     return
 
 
-print("╭─────────────────────────╮")
-print("│    Better-Trace Setup   │")
-print("╰─────────────────────────╯")
-print("\nWelcome to better-trace! Please choose an option:")
-print("1. Install")
-print("2. Upgrade")
-print("3. Uninstall")
-print("4. Check compatibility")
-print("5. Exit")
+def main_menu_banner():
+    print("╭─────────────────────────╮")
+    print("│    Better-Trace Setup   │")
+    print("╰─────────────────────────╯")
+    print("\nWelcome to better-trace! Please choose an option:")
+    print("1. Install")
+    print("2. Upgrade")
+    print("3. Uninstall")
+    print("4. Check compatibility")
+    print("5. Exit")
+
+
+main_menu_banner()
 while True:
     option = get_option()
     if option not in [1, 2, 3, 4, 5]:
