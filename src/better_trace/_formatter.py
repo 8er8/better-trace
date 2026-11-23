@@ -38,7 +38,7 @@ from ._did_you_mean import (
 )
 
 
-def _show_context(filename: str, lineno: int, context: int = 2):
+def _show_context(filename: str, lineno: int, context: int = 2, tb = None):
     """
     _show_context() is a function that takes a filename, lineno, and context to show multiple
     lines (contexts) instead of the usual one line per frame
@@ -75,25 +75,16 @@ def _show_context(filename: str, lineno: int, context: int = 2):
             )
         )
     else:  # for repl file names (like <stdin>)
-        lines = []
-        for i in range(start, end + 1):
-            line = linecache.getline(filename, i)
-            if line:
-                prefix = "❱ " if i == lineno else "  "
-                lines.append(f"{prefix}{line.rstrip()}")
-
-        code = "\n".join(lines)
-
-        console.print(
-            Syntax(
-                code,
-                "python",
-                theme=config.theme,
-                background_color=config.background_color,
-                line_numbers=True,
-            )
-        )
-
+        for frame in traceback.extract_tb(tb):
+            if frame.filename == filename:
+                line = frame.line
+        console.print(Syntax(
+            "".join(line),
+            "python",
+            background_color=config.background_color,
+            theme=config.theme,
+            padding=(0, 0, 0, 2)
+        ))
 
 def _give_filtered_locals(tb: TracebackType) -> list[Any]:
     filtered = []
@@ -259,7 +250,7 @@ def print_debug(
                     if not prev_frame.line:
                         print("  <line unavailable>  ")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno, 3)
+                        _show_context(prev_frame.filename, prev_frame.lineno, 3, tb)
                     if count > 3:
                         print(f"(Previous line repeated {count-1} times)")
                 else:
@@ -269,7 +260,7 @@ def print_debug(
                     if not prev_frame.line:
                         print("[red bold]  <line unavailable> [/red bold]")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno, 3)
+                        _show_context(prev_frame.filename, prev_frame.lineno, 3, tb)
                     if count > 3:
                         print(
                             f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
@@ -314,7 +305,7 @@ def print_debug(
             if not prev_frame.line:
                 print("  <line unavailable>  ")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno, 3)
+                _show_context(prev_frame.filename, prev_frame.lineno, 3, tb)
             if count > 3:
                 print(f"(Previous line repeated {count-1} times)")
         else:
@@ -324,7 +315,7 @@ def print_debug(
             if not prev_frame.line:
                 print("[red bold]  <line unavailable> [/red bold]")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno, 3)
+                _show_context(prev_frame.filename, prev_frame.lineno, 3, tb)
             if count > 3:
                 print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
             filtered = _give_filtered_locals(tb)
@@ -477,7 +468,7 @@ def print_verbose(
                     if not prev_frame.line:
                         print("  <line unavailable>  ")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno)
+                        _show_context(prev_frame.filename, prev_frame.lineno, tb=tb)
                     if count > 3:
                         print(f"(Previous line repeated {count-1} times)")
                 else:
@@ -487,7 +478,7 @@ def print_verbose(
                     if not prev_frame.line:
                         print("[red bold]  <line unavailable> [/red bold]")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno)
+                        _show_context(prev_frame.filename, prev_frame.lineno, tb=tb)
                     if count > 3:
                         print(
                             f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
@@ -504,7 +495,7 @@ def print_verbose(
             if not prev_frame.line:
                 print("  <line unavailable>  ")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno)
+                _show_context(prev_frame.filename, prev_frame.lineno, tb=tb)
             if count > 3:
                 print(f"(Previous line repeated {count-1} times)")
         else:
@@ -514,7 +505,7 @@ def print_verbose(
             if not prev_frame.line:
                 print("[red bold]  <line unavailable> [/red bold]")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno)
+                _show_context(prev_frame.filename, prev_frame.lineno, tb=tb)
             if count > 3:
                 print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
         print("─" * 40)
@@ -595,7 +586,7 @@ def print_context(
                     if not prev_frame.line:
                         print(f"  <line unavailable>  ")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                        _show_context(prev_frame.filename, prev_frame.lineno, 1, tb)
                     if count > 3:
                         print(f"(Previous line repeated {count-1} more times)")
                 else:
@@ -605,7 +596,7 @@ def print_context(
                     if not prev_frame.line:
                         print("[red bold]  <line unavailable> [/red bold]")
                     else:
-                        _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                        _show_context(prev_frame.filename, prev_frame.lineno, 1, tb)
                     if count > 3:
                         print(
                             f"[cyan](Previous line repeated {count-1} more times)[/cyan]"
@@ -622,7 +613,7 @@ def print_context(
             if not prev_frame.line:
                 print(f"  <line unavailable>  ")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                _show_context(prev_frame.filename, prev_frame.lineno, 1, tb)
             if count > 3:
                 print(f"(Previous line repeated {count-1} more times)")
         else:
@@ -632,7 +623,7 @@ def print_context(
             if not prev_frame.line:
                 print("[red bold]  <line unavailable>  [/red bold]")
             else:
-                _show_context(prev_frame.filename, prev_frame.lineno, 1)
+                _show_context(prev_frame.filename, prev_frame.lineno, 1, tb)
             if count > 3:
                 print(f"[cyan](Previous line repeated {count-1} more times)[/cyan]")
         print("─" * 40)
